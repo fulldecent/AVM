@@ -1,6 +1,7 @@
 package org.aion.avm.core;
 
 import java.util.Arrays;
+import org.aion.aion_types.Log;
 import s.java.math.BigInteger;
 import p.avm.Address;
 import p.avm.Result;
@@ -313,10 +314,7 @@ public class BlockchainRuntimeImpl implements IBlockchainRuntime {
     public void avm_log(ByteArray data) {
         require(null != data, "data can't be NULL");
 
-        Log log = new Log(this.capabilities, tx.destinationAddress.toBytes(),
-                List.of(),
-                data.getUnderlying()
-        );
+        Log log = Log.dataOnly(tx.destinationAddress.toBytes(), data.getUnderlying());
         task.executionSideEffects.addLogToCurrentEntry(log);
     }
 
@@ -325,10 +323,7 @@ public class BlockchainRuntimeImpl implements IBlockchainRuntime {
         require(null != topic1, "topic1 can't be NULL");
         require(null != data, "data can't be NULL");
 
-        Log log = new Log(this.capabilities, tx.destinationAddress.toBytes(),
-                List.of(LogSizeUtils.truncatePadTopic(topic1.getUnderlying())),
-                data.getUnderlying()
-        );
+        Log log = Log.topicsAndData(tx.destinationAddress.toBytes(), List.of(LogSizeUtils.truncatePadTopic(topic1.getUnderlying())), data.getUnderlying());
         task.executionSideEffects.addLogToCurrentEntry(log);
     }
 
@@ -338,10 +333,7 @@ public class BlockchainRuntimeImpl implements IBlockchainRuntime {
         require(null != topic2, "topic2 can't be NULL");
         require(null != data, "data can't be NULL");
 
-        Log log = new Log(this.capabilities, tx.destinationAddress.toBytes(),
-                List.of(LogSizeUtils.truncatePadTopic(topic1.getUnderlying()), LogSizeUtils.truncatePadTopic(topic2.getUnderlying())),
-                data.getUnderlying()
-        );
+        Log log = Log.topicsAndData(tx.destinationAddress.toBytes(), List.of(LogSizeUtils.truncatePadTopic(topic1.getUnderlying()), LogSizeUtils.truncatePadTopic(topic2.getUnderlying())), data.getUnderlying());
         task.executionSideEffects.addLogToCurrentEntry(log);
     }
 
@@ -352,10 +344,7 @@ public class BlockchainRuntimeImpl implements IBlockchainRuntime {
         require(null != topic3, "topic3 can't be NULL");
         require(null != data, "data can't be NULL");
 
-        Log log = new Log(this.capabilities, tx.destinationAddress.toBytes(),
-                List.of(LogSizeUtils.truncatePadTopic(topic1.getUnderlying()), LogSizeUtils.truncatePadTopic(topic2.getUnderlying()), LogSizeUtils.truncatePadTopic(topic3.getUnderlying())),
-                data.getUnderlying()
-        );
+        Log log = Log.topicsAndData(tx.destinationAddress.toBytes(), List.of(LogSizeUtils.truncatePadTopic(topic1.getUnderlying()), LogSizeUtils.truncatePadTopic(topic2.getUnderlying()), LogSizeUtils.truncatePadTopic(topic3.getUnderlying())), data.getUnderlying());
         task.executionSideEffects.addLogToCurrentEntry(log);
     }
 
@@ -367,10 +356,7 @@ public class BlockchainRuntimeImpl implements IBlockchainRuntime {
         require(null != topic4, "topic4 can't be NULL");
         require(null != data, "data can't be NULL");
 
-        Log log = new Log(this.capabilities, tx.destinationAddress.toBytes(),
-                List.of(LogSizeUtils.truncatePadTopic(topic1.getUnderlying()), LogSizeUtils.truncatePadTopic(topic2.getUnderlying()), LogSizeUtils.truncatePadTopic(topic3.getUnderlying()), LogSizeUtils.truncatePadTopic(topic4.getUnderlying())),
-                data.getUnderlying()
-        );
+        Log log = Log.topicsAndData(tx.destinationAddress.toBytes(), List.of(LogSizeUtils.truncatePadTopic(topic1.getUnderlying()), LogSizeUtils.truncatePadTopic(topic2.getUnderlying()), LogSizeUtils.truncatePadTopic(topic3.getUnderlying()), LogSizeUtils.truncatePadTopic(topic4.getUnderlying())), data.getUnderlying());
         task.executionSideEffects.addLogToCurrentEntry(log);
     }
 

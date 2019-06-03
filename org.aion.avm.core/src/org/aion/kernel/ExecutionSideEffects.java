@@ -2,7 +2,7 @@ package org.aion.kernel;
 
 import i.RuntimeAssertionError;
 import java.util.Stack;
-import org.aion.vm.api.interfaces.IExecutionLog;
+import org.aion.aion_types.Log;
 import org.aion.vm.api.interfaces.InternalTransactionInterface;
 
 /**
@@ -43,7 +43,7 @@ public final class ExecutionSideEffects {
     /**
      * Adds the specified log to the current side effects entry.
      */
-    public void addLogToCurrentEntry(IExecutionLog log) {
+    public void addLogToCurrentEntry(Log log) {
         SideEffects sideEffects = this.sideEffectsStack.pop();
         sideEffects = SideEffectsUtil.addLog(sideEffects, log);
         this.sideEffectsStack.push(sideEffects);

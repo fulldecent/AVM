@@ -1,6 +1,7 @@
 package org.aion.avm.tooling;
 
 import avm.Address;
+import org.aion.aion_types.Log;
 import org.aion.avm.core.AvmConfiguration;
 import org.aion.avm.core.AvmImpl;
 import org.aion.avm.core.CommonAvmFactory;
@@ -237,7 +238,7 @@ public final class AvmRule implements TestRule {
         /**
          * @return List of log objects
          */
-        public List<IExecutionLog> getLogs(){
+        public List<Log> getLogs(){
             return sideEffects.getExecutionLogs();
         }
     }
