@@ -4,7 +4,7 @@ import i.RuntimeAssertionError;
 import java.util.Collections;
 import java.util.List;
 
-import org.aion.vm.api.interfaces.IExecutionLog;
+import org.aion.types.Log;
 import org.aion.vm.api.interfaces.InternalTransactionInterface;
 
 /**
@@ -15,10 +15,10 @@ import org.aion.vm.api.interfaces.InternalTransactionInterface;
  * 2. All of the internal transactions that were spawned as a result of executing this transaction.
  */
 public final class SideEffects {
-    private final List<IExecutionLog> logs;
+    private final List<Log> logs;
     private final List<InternalTransactionInterface> internalTransactions;
 
-    private SideEffects(List<InternalTransactionInterface> internalTransactions, List<IExecutionLog> logs) {
+    private SideEffects(List<InternalTransactionInterface> internalTransactions, List<Log> logs) {
         RuntimeAssertionError.assertTrue(internalTransactions != null);
         RuntimeAssertionError.assertTrue(logs != null);
 
@@ -39,7 +39,7 @@ public final class SideEffects {
      * @param internalTransactions The internal transactions.
      * @param logs The logs.
      */
-    public static SideEffects newSideEffects(List<InternalTransactionInterface> internalTransactions, List<IExecutionLog> logs) {
+    public static SideEffects newSideEffects(List<InternalTransactionInterface> internalTransactions, List<Log> logs) {
         return new SideEffects(internalTransactions, logs);
     }
 
@@ -57,7 +57,7 @@ public final class SideEffects {
      *
      * @return the logs.
      */
-    public List<IExecutionLog> getExecutionLogs() {
+    public List<Log> getExecutionLogs() {
         return this.logs;
     }
 }
