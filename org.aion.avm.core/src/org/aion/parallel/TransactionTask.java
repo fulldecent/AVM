@@ -4,7 +4,6 @@ import avm.Address;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Stack;
 
 import org.aion.types.AionAddress;
 import org.aion.avm.core.AvmTransaction;
@@ -34,7 +33,7 @@ public class TransactionTask implements Comparable<TransactionTask>{
     private int index;
     private StringBuffer outBuffer;
     private TransactionalKernel thisTransactionKernel;
-    private Stack<SideEffects> sideEffectsStack;
+    public final ExecutionSideEffects executionSideEffects;
     private Address origin;
     private int depth;
     private Set<AionAddress> selfDestructedAddresses;
@@ -51,8 +50,7 @@ public class TransactionTask implements Comparable<TransactionTask>{
         this.outBuffer = new StringBuffer();
         this.origin = new Address(origin.toByteArray());
         this.depth = 0;
-        this.sideEffectsStack = new Stack<>();
-        this.sideEffectsStack.push(new SideEffects());
+        this.executionSideEffects = ExecutionSideEffects.newSideEffectsForExternalTransaction();
         this.selfDestructedAddresses = new HashSet<>();
         this.resetStorageKeys = new HashSet<>();
     }
@@ -147,22 +145,6 @@ public class TransactionTask implements Comparable<TransactionTask>{
 
     public void outputPrintln(String toPrint){
         this.outBuffer.append(toPrint + "\n");
-    }
-
-    public void pushSideEffects(SideEffects se) {
-        sideEffectsStack.push(se);
-    }
-
-    public SideEffects popSideEffects() {
-        return sideEffectsStack.pop();
-    }
-
-    public SideEffects peekSideEffects() {
-        return sideEffectsStack.peek();
-    }
-
-    public boolean isSideEffectsStackEmpty() {
-        return sideEffectsStack.empty();
     }
 
     public Address getOriginAddress() {

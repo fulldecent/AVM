@@ -318,7 +318,7 @@ public class BlockchainRuntimeImpl implements IBlockchainRuntime {
                 List.of(),
                 data.getUnderlying()
         );
-        task.peekSideEffects().addLog(log);
+        task.executionSideEffects.addLogToCurrentEntry(log);
     }
 
     @Override
@@ -330,7 +330,7 @@ public class BlockchainRuntimeImpl implements IBlockchainRuntime {
                 List.of(LogSizeUtils.truncatePadTopic(topic1.getUnderlying())),
                 data.getUnderlying()
         );
-        task.peekSideEffects().addLog(log);
+        task.executionSideEffects.addLogToCurrentEntry(log);
     }
 
     @Override
@@ -343,7 +343,7 @@ public class BlockchainRuntimeImpl implements IBlockchainRuntime {
                 List.of(LogSizeUtils.truncatePadTopic(topic1.getUnderlying()), LogSizeUtils.truncatePadTopic(topic2.getUnderlying())),
                 data.getUnderlying()
         );
-        task.peekSideEffects().addLog(log);
+        task.executionSideEffects.addLogToCurrentEntry(log);
     }
 
     @Override
@@ -357,7 +357,7 @@ public class BlockchainRuntimeImpl implements IBlockchainRuntime {
                 List.of(LogSizeUtils.truncatePadTopic(topic1.getUnderlying()), LogSizeUtils.truncatePadTopic(topic2.getUnderlying()), LogSizeUtils.truncatePadTopic(topic3.getUnderlying())),
                 data.getUnderlying()
         );
-        task.peekSideEffects().addLog(log);
+        task.executionSideEffects.addLogToCurrentEntry(log);
     }
 
     @Override
@@ -372,7 +372,7 @@ public class BlockchainRuntimeImpl implements IBlockchainRuntime {
                 List.of(LogSizeUtils.truncatePadTopic(topic1.getUnderlying()), LogSizeUtils.truncatePadTopic(topic2.getUnderlying()), LogSizeUtils.truncatePadTopic(topic3.getUnderlying()), LogSizeUtils.truncatePadTopic(topic4.getUnderlying())),
                 data.getUnderlying()
         );
-        task.peekSideEffects().addLog(log);
+        task.executionSideEffects.addLogToCurrentEntry(log);
     }
 
     @Override
@@ -440,7 +440,7 @@ public class BlockchainRuntimeImpl implements IBlockchainRuntime {
 
     private Result runInternalCall(InternalTransaction internalTx) {
         // add the internal transaction to result
-        task.peekSideEffects().addInternalTransaction(internalTx);
+        task.executionSideEffects.startNewInternalTransactionEntry(internalTx);
 
         // we should never leave this method without decrementing this
         task.incrementTransactionStackDepth();
