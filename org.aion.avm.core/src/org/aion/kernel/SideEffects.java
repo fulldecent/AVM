@@ -1,5 +1,6 @@
 package org.aion.kernel;
 
+import i.RuntimeAssertionError;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -28,39 +29,44 @@ public class SideEffects {
         this.internalTransactions = new ArrayList<>();
     }
 
+    public SideEffects(List<InternalTransactionInterface> internalTransactions, List<IExecutionLog> logs) {
+        this.logs = new ArrayList<>();
+        this.internalTransactions = new ArrayList<>();
+
+        this.logs.addAll(logs);
+        this.internalTransactions.addAll(internalTransactions);
+    }
+
     public void merge(SideEffects sideEffects) {
-        addLogs(sideEffects.getExecutionLogs());
-        addInternalTransactions(sideEffects.getInternalTransactions());
+        throw RuntimeAssertionError.unimplemented("unimplemented.");
     }
 
     public void markAllInternalTransactionsAsRejected() {
-        for (InternalTransactionInterface transaction : this.internalTransactions) {
-            transaction.markAsRejected();
-        }
+        throw RuntimeAssertionError.unimplemented("unimplemented.");
     }
 
     public void addInternalTransaction(InternalTransactionInterface transaction) {
-        this.internalTransactions.add(transaction);
+        throw RuntimeAssertionError.unimplemented("unimplemented.");
     }
 
     public void addInternalTransactions(List<InternalTransactionInterface> transactions) {
-        this.internalTransactions.addAll(transactions);
+        throw RuntimeAssertionError.unimplemented("unimplemented.");
     }
 
     public void addToDeletedAddresses(AionAddress address) {
-        throw new AssertionError("We shouldn't be adding and deleted addresses in the AVM");
+        throw RuntimeAssertionError.unimplemented("unimplemented.");
     }
 
     public void addAllToDeletedAddresses(Collection<AionAddress> addresses) {
-        throw new AssertionError("We shouldn't be adding and deleted addresses in the AVM");
+        throw RuntimeAssertionError.unimplemented("unimplemented.");
     }
 
     public void addLog(IExecutionLog log) {
-        this.logs.add(log);
+        throw RuntimeAssertionError.unimplemented("unimplemented.");
     }
 
     public void addLogs(Collection<IExecutionLog> logs) {
-        this.logs.addAll(logs);
+        throw RuntimeAssertionError.unimplemented("unimplemented.");
     }
 
     public List<InternalTransactionInterface> getInternalTransactions() {
