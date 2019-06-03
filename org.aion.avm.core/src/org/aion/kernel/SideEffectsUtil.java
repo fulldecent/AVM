@@ -3,7 +3,7 @@ package org.aion.kernel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.aion.vm.api.interfaces.IExecutionLog;
+import org.aion.types.Log;
 import org.aion.vm.api.interfaces.InternalTransactionInterface;
 
 /**
@@ -34,8 +34,8 @@ public final class SideEffectsUtil {
      * @param log The log to add.
      * @return the source side-effects plus the log.
      */
-    public static SideEffects addLog(SideEffects sideEffects, IExecutionLog log) {
-        List<IExecutionLog> logs = new ArrayList<>(sideEffects.getExecutionLogs());
+    public static SideEffects addLog(SideEffects sideEffects, Log log) {
+        List<Log> logs = new ArrayList<>(sideEffects.getExecutionLogs());
         logs.add(log);
 
         return SideEffects.newSideEffects(sideEffects.getInternalTransactions(), logs);
@@ -50,8 +50,8 @@ public final class SideEffectsUtil {
      * @param internalTransactions The internal transactions to add.
      * @return the source side-effects plus the logs and internal transactions.
      */
-    public static SideEffects addLogsAndInternalTransactions(SideEffects sideEffects, List<IExecutionLog> logs, List<InternalTransactionInterface> internalTransactions) {
-        List<IExecutionLog> allLogs = new ArrayList<>(sideEffects.getExecutionLogs());
+    public static SideEffects addLogsAndInternalTransactions(SideEffects sideEffects, List<Log> logs, List<InternalTransactionInterface> internalTransactions) {
+        List<Log> allLogs = new ArrayList<>(sideEffects.getExecutionLogs());
         allLogs.addAll(logs);
 
         List<InternalTransactionInterface> transactions = new ArrayList<>(sideEffects.getInternalTransactions());
