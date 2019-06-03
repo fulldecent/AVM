@@ -2,6 +2,7 @@ package org.aion.avm.core;
 
 import i.RuntimeAssertionError;
 import org.aion.kernel.AvmTransactionResult;
+import org.aion.kernel.SideEffects;
 import org.aion.parallel.TransactionTask;
 
 import java.util.LinkedList;
@@ -87,8 +88,10 @@ public class HandoffMonitor {
         
         // Consume the result and return it.
         AvmTransactionResult result = this.outgoingResults[index];
-        result.getSideEffects().merge(incomingTransactionTasks[index].popSideEffects());
-        RuntimeAssertionError.assertTrue(incomingTransactionTasks[index].isSideEffectsStackEmpty());
+
+        SideEffects sideEffects = incomingTransactionTasks[index].executionSideEffects.getExternalTransactionSideEffects();
+        result.setSideEffects(sideEffects);
+
         this.incomingTransactionTasks[index] = null;
         this.outgoingResults[index] = null;
         // If this is the last one in the list, drop it.

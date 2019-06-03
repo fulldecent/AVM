@@ -253,6 +253,10 @@ public class AvmTransactionResult {
         return sideEffects;
     }
 
+    public void setSideEffects(SideEffects sideEffects) {
+        this.sideEffects = sideEffects;
+    }
+
     public byte[] toBytes() {
         throw new AssertionError("No equivalent concept in Avm exists for this.");
     }

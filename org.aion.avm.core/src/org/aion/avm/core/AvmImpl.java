@@ -281,15 +281,12 @@ public class AvmImpl implements AvmInternal {
         if (null != this.backgroundFatalError) {
             throw this.backgroundFatalError;
         }
-        RuntimeAssertionError.assertTrue(!task.isSideEffectsStackEmpty());
-        task.pushSideEffects(new SideEffects());
+        RuntimeAssertionError.assertTrue(!task.executionSideEffects.isEmpty());
         AvmTransactionResult result = commonInvoke(parentKernel, task, tx, 0);
-        SideEffects txSideEffects = task.popSideEffects();
         if (!result.getResultCode().isSuccess()) {
-            txSideEffects.getExecutionLogs().clear();
-            txSideEffects.markAllInternalTransactionsAsRejected();
+            task.executionSideEffects.clearLogsAndMarkTransactionsAsRejectedInCurrentEntry();
         }
-        task.peekSideEffects().merge(txSideEffects);
+        task.executionSideEffects.finishCurrentInternalTransactionEntry();
         return result;
     }
 
@@ -332,8 +329,7 @@ public class AvmImpl implements AvmInternal {
         parentKernel.adjustBalance(parentKernel.getMinerAddress(), BigInteger.valueOf(result.getEnergyUsed()).multiply(BigInteger.valueOf(energyPrice)));
 
         if (!result.getResultCode().isSuccess()) {
-            task.peekSideEffects().getExecutionLogs().clear();
-            task.peekSideEffects().markAllInternalTransactionsAsRejected();
+            task.executionSideEffects.clearLogsAndMarkTransactionsAsRejectedInCurrentEntry();
         }
 
         return result;
