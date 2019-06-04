@@ -1,6 +1,7 @@
 package org.aion.avm.core;
 
 import java.math.BigInteger;
+import org.aion.types.AionAddress;
 import org.aion.avm.core.blockchainruntime.EmptyCapabilities;
 import org.aion.avm.core.dappreading.JarBuilder;
 import org.aion.avm.core.util.CodeAndArguments;
@@ -10,7 +11,6 @@ import org.aion.kernel.AvmTransactionResult;
 import org.aion.kernel.TestingBlock;
 import org.aion.kernel.TestingKernel;
 import org.aion.kernel.TestingTransaction;
-import org.aion.types.Address;
 import org.aion.vm.api.interfaces.InternalTransactionInterface;
 import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.After;
@@ -35,8 +35,8 @@ public class AvmFailureTest {
     private TestingKernel kernel;
     private AvmImpl avm;
 
-    private Address deployer = TestingKernel.PREMINED_ADDRESS;
-    private Address dappAddress;
+    private AionAddress deployer = TestingKernel.PREMINED_ADDRESS;
+    private AionAddress dappAddress;
 
     @Before
     public void setup() {
@@ -48,7 +48,7 @@ public class AvmFailureTest {
         TestingTransaction tx = TestingTransaction.create(deployer, kernel.getNonce(deployer), BigInteger.ZERO, new CodeAndArguments(jar, arguments).encodeToBytes(), energyLimit, energyPrice);
         TransactionResult txResult = avm.run(this.kernel, new TestingTransaction[] {tx})[0].get();
 
-        dappAddress = Address.wrap(txResult.getReturnData());
+        dappAddress = new AionAddress(txResult.getReturnData());
         assertTrue(null != dappAddress);
     }
 
@@ -142,6 +142,6 @@ public class AvmFailureTest {
         TestingTransaction tx = TestingTransaction.create(deployer, kernel.getNonce(deployer), BigInteger.ZERO, new CodeAndArguments(jar, arguments).encodeToBytes(), energyLimit, energyPrice);
         TransactionResult txResult = avm.run(this.kernel, new TestingTransaction[] {tx})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, txResult.getResultCode());
-        Assert.assertNotNull(Address.wrap(txResult.getReturnData()));
+        Assert.assertNotNull(new AionAddress(txResult.getReturnData()));
     }
 }

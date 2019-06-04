@@ -3,6 +3,7 @@ package org.aion.avm.core;
 import static org.junit.Assert.assertEquals;
 
 import java.math.BigInteger;
+import org.aion.types.AionAddress;
 import org.aion.avm.core.blockchainruntime.EmptyCapabilities;
 import org.aion.avm.core.dappreading.JarBuilder;
 import org.aion.avm.core.util.ABIUtil;
@@ -12,7 +13,6 @@ import org.aion.kernel.AvmTransactionResult.Code;
 import org.aion.kernel.TestingBlock;
 import org.aion.kernel.TestingKernel;
 import org.aion.kernel.TestingTransaction;
-import org.aion.types.Address;
 import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.After;
 import org.junit.Before;
@@ -22,8 +22,8 @@ public class StackDepthTest {
     private TestingBlock block = new TestingBlock(new byte[32], 1, Helpers.randomAddress(), System.currentTimeMillis(), new byte[0]);
     private TestingKernel kernel;
     private AvmImpl avm;
-    private Address deployer = TestingKernel.PREMINED_ADDRESS;
-    private Address dappAddress;
+    private AionAddress deployer = TestingKernel.PREMINED_ADDRESS;
+    private AionAddress dappAddress;
 
 
     @Before
@@ -38,7 +38,7 @@ public class StackDepthTest {
         TestingTransaction tx = TestingTransaction.create(this.deployer, this.kernel.getNonce(this.deployer), BigInteger.ZERO, jar, 5_000_000, 1);
         TransactionResult txResult = this.avm.run(this.kernel, new TestingTransaction[] {tx})[0].get();
         assertEquals(Code.SUCCESS, txResult.getResultCode());
-        this.dappAddress = Address.wrap(txResult.getReturnData());
+        this.dappAddress = new AionAddress(txResult.getReturnData());
     }
 
     @After

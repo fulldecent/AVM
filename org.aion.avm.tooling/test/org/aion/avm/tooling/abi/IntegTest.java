@@ -119,7 +119,7 @@ public class IntegTest {
         ret = (String) callStatic(dapp, "returnEcho", "Code meets world");
         assertEquals("Code meets world", ret);
 
-        Address addr = new Address(Helpers.randomAddress().toBytes());
+        Address addr = new Address(Helpers.randomAddress().toByteArray());
 
         Address retAddr = (Address) callStatic(dapp, "returnEchoAddress", addr);
         assertEquals(addr, retAddr);

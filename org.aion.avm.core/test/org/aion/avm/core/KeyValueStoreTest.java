@@ -4,6 +4,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.math.BigInteger;
+import org.aion.types.AionAddress;
 import org.aion.avm.RuntimeMethodFeeSchedule;
 import org.aion.avm.StorageFees;
 import org.aion.avm.core.blockchainruntime.EmptyCapabilities;
@@ -16,7 +17,6 @@ import org.aion.kernel.AvmTransactionResult.Code;
 import org.aion.kernel.TestingBlock;
 import org.aion.kernel.TestingKernel;
 import org.aion.kernel.TestingTransaction;
-import org.aion.types.Address;
 import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.After;
 import org.junit.Before;
@@ -34,8 +34,8 @@ public class KeyValueStoreTest {
     private TestingKernel kernel;
     private AvmImpl avm;
 
-    private Address deployer = TestingKernel.PREMINED_ADDRESS;
-    private Address dappAddress;
+    private AionAddress deployer = TestingKernel.PREMINED_ADDRESS;
+    private AionAddress dappAddress;
 
 
     @Before
@@ -49,7 +49,7 @@ public class KeyValueStoreTest {
         TestingTransaction tx = TestingTransaction.create(deployer, kernel.getNonce(deployer), BigInteger.ZERO, new CodeAndArguments(jar, null).encodeToBytes(), energyLimit, energyPrice);
         TransactionResult txResult = avm.run(this.kernel, new TestingTransaction[] {tx})[0].get();
         assertEquals(Code.SUCCESS, txResult.getResultCode());
-        dappAddress = Address.wrap(txResult.getReturnData());
+        dappAddress = new AionAddress(txResult.getReturnData());
     }
 
     @After
