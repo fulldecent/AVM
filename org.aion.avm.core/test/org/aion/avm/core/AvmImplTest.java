@@ -77,8 +77,8 @@ public class AvmImplTest {
         assertNull(result.getReturnData());
         assertEquals(tx.getTransactionCost(), result.getEnergyUsed());
         assertEquals(energyLimit - tx.getTransactionCost(), result.getEnergyRemaining());
-        assertEquals(0, result.getSideEffects().getExecutionLogs().size());
-        assertEquals(0, result.getSideEffects().getInternalTransactions().size());
+        assertEquals(0, result.getLogs().size());
+        assertEquals(0, result.getInternalTransactions().size());
 
         // verify state change
         assertEquals(1, kernel.getNonce(from).intValue());
@@ -108,8 +108,8 @@ public class AvmImplTest {
         assertNull(result.getReturnData());
         assertEquals(tx.getTransactionCost(), result.getEnergyUsed());
         assertEquals(energyLimit - tx.getTransactionCost(), result.getEnergyRemaining());
-        assertEquals(0, result.getSideEffects().getExecutionLogs().size());
-        assertEquals(0, result.getSideEffects().getInternalTransactions().size());
+        assertEquals(0, result.getLogs().size());
+        assertEquals(0, result.getInternalTransactions().size());
 
         // verify state change
         assertEquals(1, kernel.getNonce(from).intValue());

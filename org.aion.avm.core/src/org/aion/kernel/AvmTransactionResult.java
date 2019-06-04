@@ -1,7 +1,11 @@
 package org.aion.kernel;
 
+import java.util.Collections;
+import java.util.List;
+import org.aion.aion_types.Log;
 import org.aion.avm.core.util.Helpers;
 import i.RuntimeAssertionError;
+import org.aion.vm.api.interfaces.InternalTransactionInterface;
 import org.aion.vm.api.interfaces.KernelInterface;
 import org.aion.vm.api.interfaces.ResultCode;
 
@@ -173,10 +177,9 @@ public class AvmTransactionResult {
      */
     private KernelInterface kernel;
 
-    /**
-     * The side effects caused by executing the transaction.
-     */
-    private SideEffects sideEffects;
+    private List<Log> logs;
+
+    private List<InternalTransactionInterface> internalTransactions;
 
     /**
      * Constructs a result whose code is SUCCESS and whose energyUsed is as specified.
@@ -186,7 +189,8 @@ public class AvmTransactionResult {
         this.energyLimit = energyLimit;
         this.energyUsed = energyUsed;
         this.energyRemaining = this.energyLimit - this.energyUsed;
-        this.sideEffects = SideEffects.emptySideEffects();
+        this.logs = Collections.unmodifiableList(Collections.emptyList());
+        this.internalTransactions = Collections.unmodifiableList(Collections.emptyList());
     }
 
     public ResultCode getResultCode() {
@@ -249,12 +253,32 @@ public class AvmTransactionResult {
                 '}';
     }
 
-    public SideEffects getSideEffects() {
-        return sideEffects;
+    /**
+     * Returns an unmodifiable list of logs that were fired off during the transaction that this
+     * result pertains to.
+     *
+     * @return the logs.
+     */
+    public List<Log> getLogs() {
+        return this.logs;
     }
 
-    public void setSideEffects(SideEffects sideEffects) {
-        this.sideEffects = sideEffects;
+    /**
+     * Returns an unmodifiable list of internal transactions that were spawned by the transaction
+     * that this result pertains to.
+     *
+     * @return the internal transactions.
+     */
+    public List<InternalTransactionInterface> getInternalTransactions() {
+        return this.internalTransactions;
+    }
+
+    public void setLogs(List<Log> logs) {
+        this.logs = Collections.unmodifiableList(logs);
+    }
+
+    public void setInternalTransactions(List<InternalTransactionInterface> internalTransactions) {
+        this.internalTransactions = Collections.unmodifiableList(internalTransactions);
     }
 
     public byte[] toBytes() {
