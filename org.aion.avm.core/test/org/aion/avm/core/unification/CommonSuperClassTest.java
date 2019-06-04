@@ -2,6 +2,7 @@ package org.aion.avm.core.unification;
 
 import java.math.BigInteger;
 
+import org.aion.types.AionAddress;
 import org.aion.avm.core.AvmConfiguration;
 import org.aion.avm.core.AvmImpl;
 import org.aion.avm.core.CommonAvmFactory;
@@ -18,7 +19,6 @@ import org.aion.avm.userlib.abi.ABIToken;
 import org.aion.kernel.AvmTransactionResult;
 import org.aion.kernel.TestingBlock;
 import org.aion.kernel.TestingKernel;
-import org.aion.types.Address;
 import org.aion.kernel.TestingTransaction;
 import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.After;
@@ -39,7 +39,7 @@ import org.junit.Test;
 public class CommonSuperClassTest {
     private static long ENERGY_LIMIT = 10_000_000L;
     private static long ENERGY_PRICE = 1L;
-    private static Address DEPLOYER = TestingKernel.PREMINED_ADDRESS;
+    private static AionAddress DEPLOYER = TestingKernel.PREMINED_ADDRESS;
     private static TestingBlock BLOCK = new TestingBlock(new byte[32], 1, Helpers.randomAddress(), System.currentTimeMillis(), new byte[0]);
     private static TestingKernel KERNEL = new TestingKernel(BLOCK);
     private AvmImpl avm;
@@ -69,7 +69,7 @@ public class CommonSuperClassTest {
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, deploymentResult.getResultCode());
 
         // We actually call the contract and interact with the types we received.
-        TestingTransaction call = TestingTransaction.call(DEPLOYER, Address.wrap(deploymentResult.getReturnData()), KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, new byte[10], ENERGY_LIMIT, ENERGY_PRICE);
+        TestingTransaction call = TestingTransaction.call(DEPLOYER, new AionAddress(deploymentResult.getReturnData()), KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, new byte[10], ENERGY_LIMIT, ENERGY_PRICE);
         TransactionResult callResult = avm.run(KERNEL, new TestingTransaction[] {call})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, callResult.getResultCode());
     }
@@ -117,7 +117,7 @@ public class CommonSuperClassTest {
         TransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, deploymentResult.getResultCode());
 
-        TestingTransaction call = TestingTransaction.call(DEPLOYER, Address.wrap(deploymentResult.getReturnData()), KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, new byte[10], ENERGY_LIMIT, ENERGY_PRICE);
+        TestingTransaction call = TestingTransaction.call(DEPLOYER, new AionAddress(deploymentResult.getReturnData()), KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, new byte[10], ENERGY_LIMIT, ENERGY_PRICE);
         TransactionResult callResult = avm.run(KERNEL, new TestingTransaction[] {call})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, callResult.getResultCode());
     }
@@ -133,7 +133,7 @@ public class CommonSuperClassTest {
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, deploymentResult.getResultCode());
 
         // We actually call the contract and interact with the types we received.
-        TestingTransaction call = TestingTransaction.call(DEPLOYER, Address.wrap(deploymentResult.getReturnData()), KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, new byte[10], ENERGY_LIMIT, ENERGY_PRICE);
+        TestingTransaction call = TestingTransaction.call(DEPLOYER, new AionAddress(deploymentResult.getReturnData()), KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, new byte[10], ENERGY_LIMIT, ENERGY_PRICE);
         TransactionResult callResult = avm.run(KERNEL, new TestingTransaction[] {call})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, callResult.getResultCode());
     }
@@ -160,7 +160,7 @@ public class CommonSuperClassTest {
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, deploymentResult.getResultCode());
 
         // We actually call the contract and interact with the types we received back from the ambiguous call.
-        TestingTransaction call = TestingTransaction.call(DEPLOYER, Address.wrap(deploymentResult.getReturnData()), KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, new byte[10], ENERGY_LIMIT, ENERGY_PRICE);
+        TestingTransaction call = TestingTransaction.call(DEPLOYER, new AionAddress(deploymentResult.getReturnData()), KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, new byte[10], ENERGY_LIMIT, ENERGY_PRICE);
         TransactionResult callResult = avm.run(KERNEL, new TestingTransaction[] {call})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, callResult.getResultCode());
     }

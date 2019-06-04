@@ -1,5 +1,6 @@
 package org.aion.avm.tooling;
 
+import org.aion.types.AionAddress;
 import org.aion.avm.core.util.ABIUtil;
 import org.aion.avm.core.AvmConfiguration;
 import org.aion.avm.core.AvmImpl;
@@ -52,8 +53,8 @@ public class CryptoUtilMethodFeeBenchmarkTest {
     private long energyLimit = 100_000_000_000L;
     private long energyPrice = 1L;
 
-    private org.aion.types.Address deployer = TestingKernel.PREMINED_ADDRESS;
-    private org.aion.types.Address dappAddress;
+    private AionAddress deployer = TestingKernel.PREMINED_ADDRESS;
+    private AionAddress dappAddress;
 
     private TestingKernel kernel;
     private AvmImpl avm;
@@ -92,7 +93,7 @@ public class CryptoUtilMethodFeeBenchmarkTest {
         this.kernel = new TestingKernel();
         this.avm = CommonAvmFactory.buildAvmInstanceForConfiguration(new StandardCapabilities(), new AvmConfiguration());
         TestingTransaction tx = TestingTransaction.create(deployer, kernel.getNonce(deployer), BigInteger.ZERO, txData, energyLimit, energyPrice);
-        dappAddress = org.aion.types.Address.wrap(avm.run(this.kernel, new TestingTransaction[] {tx})[0].get().getReturnData());
+        dappAddress = new AionAddress(avm.run(this.kernel, new TestingTransaction[] {tx})[0].get().getReturnData());
         Assert.assertNotNull(dappAddress);
     }
 

@@ -3,8 +3,10 @@ package org.aion.avm.core.blockchainruntime;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import avm.Address;
 import java.math.BigInteger;
 import avm.Blockchain;
+import org.aion.types.AionAddress;
 import org.aion.avm.core.AvmConfiguration;
 import org.aion.avm.core.AvmImpl;
 import org.aion.avm.core.CommonAvmFactory;
@@ -16,7 +18,6 @@ import org.aion.avm.core.util.Helpers;
 import org.aion.kernel.TestingBlock;
 import org.aion.kernel.TestingKernel;
 import org.aion.kernel.TestingTransaction;
-import org.aion.types.Address;
 import org.aion.vm.api.interfaces.KernelInterface;
 import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.AfterClass;
@@ -28,7 +29,7 @@ import org.junit.Test;
  * of a deployed contract from within that contract.
  */
 public class ContractBalanceTest {
-    private static Address from = TestingKernel.PREMINED_ADDRESS;
+    private static AionAddress from = TestingKernel.PREMINED_ADDRESS;
     private static long energyLimit = 10_000_000L;
     private static long energyPrice = 5;
     private static TestingBlock block = new TestingBlock(new byte[32], 1, Helpers.randomAddress(), System.currentTimeMillis(), new byte[0]);
@@ -49,7 +50,7 @@ public class ContractBalanceTest {
 
     @Test
     public void testClinitBalanceWhenTransferringZero() {
-        Address contract = deployContract(BigInteger.ZERO);
+        AionAddress contract = deployContract(BigInteger.ZERO);
         BigInteger actualBalance = callContractToGetClinitBalance(contract);
         assertEquals(BigInteger.ZERO, actualBalance);
     }
@@ -57,14 +58,14 @@ public class ContractBalanceTest {
     @Test
     public void testClinitBalanceWhenTransferringPositiveAmount() {
         BigInteger transferAmount = BigInteger.valueOf(1234567);
-        Address contract = deployContract(transferAmount);
+        AionAddress contract = deployContract(transferAmount);
         BigInteger actualBalance = callContractToGetClinitBalance(contract);
         assertEquals(transferAmount, actualBalance);
     }
 
     @Test
     public void testContractBalance() {
-        Address contract = deployContract(BigInteger.ZERO);
+        AionAddress contract = deployContract(BigInteger.ZERO);
 
         // Contract currently has no balance.
         BigInteger balance = callContractToGetItsBalance(contract);
@@ -85,8 +86,8 @@ public class ContractBalanceTest {
 
     @Test
     public void testContractBalanceViaInternalTransaction() {
-        Address balanceContract = deployContract(BigInteger.ZERO);
-        Address redirectContract = deployRedirectContract();
+        AionAddress balanceContract = deployContract(BigInteger.ZERO);
+        AionAddress redirectContract = deployRedirectContract();
 
         // We give the redirect contract some balance to ensure we aren't querying the wrong contract.
         kernel.adjustBalance(redirectContract, BigInteger.valueOf(2938752));
@@ -99,17 +100,17 @@ public class ContractBalanceTest {
     /**
      * Deploys the contract and transfers value amount of Aion into it.
      */
-    private Address deployContract(BigInteger value) {
+    private AionAddress deployContract(BigInteger value) {
         byte[] jar = JarBuilder.buildJarForMainAndClassesAndUserlib(ContractBalanceTarget.class);
         jar = new CodeAndArguments(jar, new byte[0]).encodeToBytes();
 
         TestingTransaction transaction = TestingTransaction.create(from, kernel.getNonce(from), value, jar, energyLimit, energyPrice);
         TransactionResult result = avm.run(ContractBalanceTest.kernel, new TestingTransaction[] {transaction})[0].get();
         assertTrue(result.getResultCode().isSuccess());
-        return Address.wrap(result.getReturnData());
+        return new AionAddress(result.getReturnData());
     }
 
-    private BigInteger callContractToGetItsBalance(Address contract) {
+    private BigInteger callContractToGetItsBalance(AionAddress contract) {
         byte[] callData = ABIUtil.encodeMethodArguments("getBalanceOfThisContract");
         TestingTransaction transaction = TestingTransaction.call(from, contract, kernel.getNonce(from), BigInteger.ZERO, callData, energyLimit, energyPrice);
         TransactionResult result = avm.run(ContractBalanceTest.kernel, new TestingTransaction[] {transaction})[0].get();
@@ -117,7 +118,7 @@ public class ContractBalanceTest {
         return new BigInteger((byte[]) ABIUtil.decodeOneObject(result.getReturnData()));
     }
 
-    private BigInteger callContractToGetClinitBalance(Address contract) {
+    private BigInteger callContractToGetClinitBalance(AionAddress contract) {
         byte[] callData = ABIUtil.encodeMethodArguments("getBalanceOfThisContractDuringClinit");
         TestingTransaction transaction = TestingTransaction.call(from, contract, kernel.getNonce(from), BigInteger.ZERO, callData, energyLimit, energyPrice);
         TransactionResult result = avm.run(ContractBalanceTest.kernel, new TestingTransaction[] {transaction})[0].get();
@@ -125,32 +126,32 @@ public class ContractBalanceTest {
         return new BigInteger((byte[]) ABIUtil.decodeOneObject(result.getReturnData()));
     }
 
-    private Address deployRedirectContract() {
+    private AionAddress deployRedirectContract() {
         byte[] jar = JarBuilder.buildJarForMainAndClassesAndUserlib(RedirectContract.class);
         jar = new CodeAndArguments(jar, new byte[0]).encodeToBytes();
 
         TestingTransaction transaction = TestingTransaction.create(from, kernel.getNonce(from), BigInteger.ZERO, jar, energyLimit, energyPrice);
         TransactionResult result = avm.run(ContractBalanceTest.kernel, new TestingTransaction[] {transaction})[0].get();
         assertTrue(result.getResultCode().isSuccess());
-        return Address.wrap(result.getReturnData());
+        return new AionAddress(result.getReturnData());
     }
 
-    private BigInteger callContractToGetItsBalanceViaRedirectContract(Address redirectContract, Address balanceContract) {
-        avm.Address contract = getContractAsAbiAddress(balanceContract);
+    private BigInteger callContractToGetItsBalanceViaRedirectContract(AionAddress redirectContract, AionAddress balanceContract) {
+        Address contract = getContractAsAbiAddress(balanceContract);
         byte[] args = ABIUtil.encodeMethodArguments("getBalanceOfThisContract");
         byte[] callData = ABIUtil.encodeMethodArguments("callOtherContractAndRequireItIsSuccess", contract, 0L, args);
         return runTransactionAndInterpretOutputAsBigInteger(redirectContract, callData);
     }
 
-    private BigInteger runTransactionAndInterpretOutputAsBigInteger(Address contract, byte[] callData) {
+    private BigInteger runTransactionAndInterpretOutputAsBigInteger(AionAddress contract, byte[] callData) {
         TestingTransaction transaction = TestingTransaction.call(from, contract, kernel.getNonce(from), BigInteger.ZERO, callData, energyLimit, energyPrice);
         TransactionResult result = avm.run(ContractBalanceTest.kernel, new TestingTransaction[] {transaction})[0].get();
         assertTrue(result.getResultCode().isSuccess());
         return new BigInteger((byte[]) ABIUtil.decodeOneObject(result.getReturnData()));
     }
 
-    private avm.Address getContractAsAbiAddress(Address contract) {
-        return new avm.Address(contract.toBytes());
+    private Address getContractAsAbiAddress(AionAddress contract) {
+        return new Address(contract.toByteArray());
     }
 
 }
