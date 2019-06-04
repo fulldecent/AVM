@@ -19,7 +19,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.aion.vm.api.interfaces.SimpleFuture;
-import org.aion.vm.api.interfaces.TransactionResult;
 
 
 public class AvmCLI {
@@ -52,7 +51,7 @@ public class AvmCLI {
         env.logLine("Sender       : " + sender);
     }
 
-    public static void reportDeployResult(IEnvironment env, TransactionResult createResult){
+    public static void reportDeployResult(IEnvironment env, AvmTransactionResult createResult){
         String dappAddress = Helpers.bytesToHexString(createResult.getReturnData());
         env.noteRelevantAddress(dappAddress);
         
@@ -100,7 +99,7 @@ public class AvmCLI {
         }
     }
 
-    private static void reportCallResult(IEnvironment env, TransactionResult callResult){
+    private static void reportCallResult(IEnvironment env, AvmTransactionResult callResult){
         lineSeparator(env);
         env.logLine("DApp call result");
         env.logLine("Result status: " + callResult.getResultCode().name());
@@ -121,7 +120,7 @@ public class AvmCLI {
         env.logLine("Balance      : " + balance);
     }
 
-    private static void reportTransferResult(IEnvironment env, TransactionResult transferResult){
+    private static void reportTransferResult(IEnvironment env, AvmTransactionResult transferResult){
         lineSeparator(env);
         env.logLine("DApp balance transfer result");
         env.logLine("Result status: " + transferResult.getResultCode().name());
@@ -290,8 +289,8 @@ public class AvmCLI {
                 File storageFile = new File(invocation.storagePath);
                 TestingKernel kernel = new TestingKernel(storageFile, block);
                 AvmImpl avm = CommonAvmFactory.buildAvmInstanceForConfiguration(capabilities, new AvmConfiguration());
-                SimpleFuture<TransactionResult>[] futures = avm.run(kernel, transactions);
-                TransactionResult[] results = new AvmTransactionResult[futures.length];
+                SimpleFuture<AvmTransactionResult>[] futures = avm.run(kernel, transactions);
+                AvmTransactionResult[] results = new AvmTransactionResult[futures.length];
                 for (int i = 0; i < futures.length; ++i) {
                     results[i] = futures[i].get();
                 }

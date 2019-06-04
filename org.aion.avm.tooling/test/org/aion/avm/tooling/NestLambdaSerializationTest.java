@@ -5,8 +5,8 @@ import static org.junit.Assert.assertEquals;
 import avm.Address;
 import java.math.BigInteger;
 import org.aion.avm.core.util.ABIUtil;
+import org.aion.kernel.AvmTransactionResult;
 import org.aion.kernel.AvmTransactionResult.Code;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -19,7 +19,7 @@ public class NestLambdaSerializationTest {
     @Test
     public void testSerializeDeserializeNestedLambda() {
         byte[] jar = avmRule.getDappBytes(NestedLambdaTarget.class, new byte[0]);
-        TransactionResult result = avmRule.deploy(deployer, BigInteger.ZERO, jar, 5_000_000, 1).getTransactionResult();
+        AvmTransactionResult result = avmRule.deploy(deployer, BigInteger.ZERO, jar, 5_000_000, 1).getTransactionResult();
         assertEquals(Code.SUCCESS, result.getResultCode());
         Address contract = new Address(result.getReturnData());
 

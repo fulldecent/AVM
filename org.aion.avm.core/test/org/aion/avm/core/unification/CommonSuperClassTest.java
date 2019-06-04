@@ -20,7 +20,6 @@ import org.aion.kernel.AvmTransactionResult;
 import org.aion.kernel.TestingBlock;
 import org.aion.kernel.TestingKernel;
 import org.aion.kernel.TestingTransaction;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -65,12 +64,12 @@ public class CommonSuperClassTest {
         byte[] txData = new CodeAndArguments(jar, arguments).encodeToBytes();
 
         TestingTransaction deployment = TestingTransaction.create(DEPLOYER, KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
+        AvmTransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, deploymentResult.getResultCode());
 
         // We actually call the contract and interact with the types we received.
         TestingTransaction call = TestingTransaction.call(DEPLOYER, new AionAddress(deploymentResult.getReturnData()), KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, new byte[10], ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult callResult = avm.run(KERNEL, new TestingTransaction[] {call})[0].get();
+        AvmTransactionResult callResult = avm.run(KERNEL, new TestingTransaction[] {call})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, callResult.getResultCode());
     }
 
@@ -81,7 +80,7 @@ public class CommonSuperClassTest {
         byte[] txData = new CodeAndArguments(jar, arguments).encodeToBytes();
 
         TestingTransaction deployment = TestingTransaction.create(DEPLOYER, KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
+        AvmTransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, deploymentResult.getResultCode());
     }
 
@@ -92,7 +91,7 @@ public class CommonSuperClassTest {
         byte[] txData = new CodeAndArguments(jar, arguments).encodeToBytes();
 
         TestingTransaction deployment = TestingTransaction.create(DEPLOYER, KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
+        AvmTransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, deploymentResult.getResultCode());
     }
 
@@ -103,7 +102,7 @@ public class CommonSuperClassTest {
         byte[] txData = new CodeAndArguments(jar, arguments).encodeToBytes();
 
         TestingTransaction deployment = TestingTransaction.create(DEPLOYER, KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
+        AvmTransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, deploymentResult.getResultCode());
     }
 
@@ -114,11 +113,11 @@ public class CommonSuperClassTest {
         byte[] txData = new CodeAndArguments(jar, arguments).encodeToBytes();
 
         TestingTransaction deployment = TestingTransaction.create(DEPLOYER, KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
+        AvmTransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, deploymentResult.getResultCode());
 
         TestingTransaction call = TestingTransaction.call(DEPLOYER, new AionAddress(deploymentResult.getReturnData()), KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, new byte[10], ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult callResult = avm.run(KERNEL, new TestingTransaction[] {call})[0].get();
+        AvmTransactionResult callResult = avm.run(KERNEL, new TestingTransaction[] {call})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, callResult.getResultCode());
     }
 
@@ -127,14 +126,14 @@ public class CommonSuperClassTest {
         byte[] jar = JarBuilder.buildJarForMainAndClasses(CommonSuperClassTarget_combineWithExceptions.class, CommonSuperClassTypes.class, AionMap.class, ABIException.class);
         byte[] arguments = new byte[0];
         byte[] txData = new CodeAndArguments(jar, arguments).encodeToBytes();
-        
+
         TestingTransaction deployment = TestingTransaction.create(DEPLOYER, KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
+        AvmTransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, deploymentResult.getResultCode());
 
         // We actually call the contract and interact with the types we received.
         TestingTransaction call = TestingTransaction.call(DEPLOYER, new AionAddress(deploymentResult.getReturnData()), KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, new byte[10], ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult callResult = avm.run(KERNEL, new TestingTransaction[] {call})[0].get();
+        AvmTransactionResult callResult = avm.run(KERNEL, new TestingTransaction[] {call})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, callResult.getResultCode());
     }
 
@@ -145,7 +144,7 @@ public class CommonSuperClassTest {
         byte[] txData = new CodeAndArguments(jar, arguments).encodeToBytes();
 
         TestingTransaction deployment = TestingTransaction.create(DEPLOYER, KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
+        AvmTransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, deploymentResult.getResultCode());
     }
 
@@ -156,12 +155,12 @@ public class CommonSuperClassTest {
         byte[] txData = new CodeAndArguments(jar, arguments).encodeToBytes();
 
         TestingTransaction deployment = TestingTransaction.create(DEPLOYER, KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
+        AvmTransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, deploymentResult.getResultCode());
 
         // We actually call the contract and interact with the types we received back from the ambiguous call.
         TestingTransaction call = TestingTransaction.call(DEPLOYER, new AionAddress(deploymentResult.getReturnData()), KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, new byte[10], ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult callResult = avm.run(KERNEL, new TestingTransaction[] {call})[0].get();
+        AvmTransactionResult callResult = avm.run(KERNEL, new TestingTransaction[] {call})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, callResult.getResultCode());
     }
 
@@ -172,7 +171,7 @@ public class CommonSuperClassTest {
         byte[] txData = new CodeAndArguments(jar, arguments).encodeToBytes();
 
         TestingTransaction deployment = TestingTransaction.create(DEPLOYER, KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
+        AvmTransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, deploymentResult.getResultCode());
     }
 
@@ -183,7 +182,7 @@ public class CommonSuperClassTest {
         byte[] txData = new CodeAndArguments(jar, arguments).encodeToBytes();
 
         TestingTransaction deployment = TestingTransaction.create(DEPLOYER, KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
+        AvmTransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, deploymentResult.getResultCode());
     }
 
@@ -194,7 +193,7 @@ public class CommonSuperClassTest {
         byte[] txData = new CodeAndArguments(jar, arguments).encodeToBytes();
 
         TestingTransaction deployment = TestingTransaction.create(DEPLOYER, KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
+        AvmTransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, deploymentResult.getResultCode());
     }
 
@@ -205,7 +204,7 @@ public class CommonSuperClassTest {
         byte[] txData = new CodeAndArguments(jar, arguments).encodeToBytes();
 
         TestingTransaction deployment = TestingTransaction.create(DEPLOYER, KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
+        AvmTransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, deploymentResult.getResultCode());
     }
 
@@ -217,7 +216,7 @@ public class CommonSuperClassTest {
         byte[] txData = new CodeAndArguments(jar, arguments).encodeToBytes();
 
         TestingTransaction deployment = TestingTransaction.create(DEPLOYER, KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
+        AvmTransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, deploymentResult.getResultCode());
     }
 
@@ -228,7 +227,7 @@ public class CommonSuperClassTest {
         byte[] txData = new CodeAndArguments(jar, arguments).encodeToBytes();
 
         TestingTransaction deployment = TestingTransaction.create(DEPLOYER, KERNEL.getNonce(DEPLOYER), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
+        AvmTransactionResult deploymentResult = avm.run(KERNEL, new TestingTransaction[] {deployment})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, deploymentResult.getResultCode());
     }
 }

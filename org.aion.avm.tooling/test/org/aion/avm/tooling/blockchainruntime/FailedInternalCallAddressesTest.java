@@ -4,7 +4,7 @@ import avm.Blockchain;
 import org.aion.avm.core.util.ABIUtil;
 import avm.Address;
 import org.aion.avm.tooling.AvmRule;
-import org.aion.vm.api.interfaces.TransactionResult;
+import org.aion.kernel.AvmTransactionResult;
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -260,13 +260,13 @@ public class FailedInternalCallAddressesTest {
             callData = ABIUtil.encodeMethodArguments("runInternalCallsAndTrackAddressGrabOwnAddressThenRecurse", (Object)otherContracts);
         }
 
-        TransactionResult result = avmRule.call(from, contract, BigInteger.ZERO, callData, energyLimit, energyPrice).getTransactionResult();
+        AvmTransactionResult result = avmRule.call(from, contract, BigInteger.ZERO, callData, energyLimit, energyPrice).getTransactionResult();
         assertTrue(result.getResultCode().isSuccess());
         return (Address[]) ABIUtil.decodeOneObject(result.getReturnData());
     }
 
     private static Address deployFailedInternalCallAddressTrackerContract() {
-        TransactionResult result = avmRule.deploy(from, BigInteger.ZERO, avmRule.getDappBytes(FailedInternalCallAddressesContract.class, new byte[0]), energyLimit, energyPrice).getTransactionResult();
+        AvmTransactionResult result = avmRule.deploy(from, BigInteger.ZERO, avmRule.getDappBytes(FailedInternalCallAddressesContract.class, new byte[0]), energyLimit, energyPrice).getTransactionResult();
         assertTrue(result.getResultCode().isSuccess());
         return new Address(result.getReturnData());
     }
@@ -280,7 +280,7 @@ public class FailedInternalCallAddressesTest {
     }
 
     private static Address deployInternalCallAddressTrackerContract() {
-        TransactionResult result = avmRule.deploy(from, BigInteger.ZERO, avmRule.getDappBytes(FailedInternalCallAddressesContract.class, new byte[0]), energyLimit, energyPrice).getTransactionResult();
+        AvmTransactionResult result = avmRule.deploy(from, BigInteger.ZERO, avmRule.getDappBytes(FailedInternalCallAddressesContract.class, new byte[0]), energyLimit, energyPrice).getTransactionResult();
         assertTrue(result.getResultCode().isSuccess());
         return new Address(result.getReturnData());
     }

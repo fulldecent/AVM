@@ -12,7 +12,6 @@ import org.aion.avm.core.util.Helpers;
 import org.aion.avm.tooling.AvmRule;
 import org.aion.kernel.AvmTransactionResult;
 import org.aion.kernel.AvmTransactionResult.Code;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -27,7 +26,7 @@ public class IntegTest {
     private Address installTestDApp(byte[] jar) {
 
         // Deploy.
-        TransactionResult createResult =
+        AvmTransactionResult createResult =
                 avmRule.deploy(
                         avmRule.getPreminedAccount(),
                         BigInteger.ZERO,
@@ -41,7 +40,7 @@ public class IntegTest {
 
     private Object callStatic(Address dapp, String methodName, Object... arguments) {
         byte[] argData = ABIUtil.encodeMethodArguments(methodName, arguments);
-        TransactionResult result =
+        AvmTransactionResult result =
                 avmRule.call(
                         avmRule.getPreminedAccount(),
                         dapp,
@@ -59,7 +58,7 @@ public class IntegTest {
     }
 
     private void balanceTransfer(Address dapp) {
-        TransactionResult result =
+        AvmTransactionResult result =
             avmRule.call(
                 avmRule.getPreminedAccount(),
                 dapp,
@@ -178,7 +177,7 @@ public class IntegTest {
 
 
         byte[] argData = ABIUtil.encodeMethodArguments("noSuchMethod");
-        TransactionResult result =
+        AvmTransactionResult result =
             avmRule.call(
                 avmRule.getPreminedAccount(),
                 dapp,

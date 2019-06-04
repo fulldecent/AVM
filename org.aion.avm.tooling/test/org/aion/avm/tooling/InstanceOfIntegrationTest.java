@@ -3,7 +3,6 @@ package org.aion.avm.tooling;
 import org.aion.avm.core.util.ABIUtil;
 import avm.Address;
 import org.aion.kernel.AvmTransactionResult;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -28,7 +27,7 @@ public class InstanceOfIntegrationTest {
 
     @BeforeClass
     public static void setupClass() throws Exception {
-        TransactionResult createResult = avmRule.deploy(deployer, BigInteger.ZERO, avmRule.getDappBytes(InstanceOfIntegrationTestTarget.class, new byte[0]), ENERGY_LIMIT, ENERGY_PRICE).getTransactionResult();
+        AvmTransactionResult createResult = avmRule.deploy(deployer, BigInteger.ZERO, avmRule.getDappBytes(InstanceOfIntegrationTestTarget.class, new byte[0]), ENERGY_LIMIT, ENERGY_PRICE).getTransactionResult();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, createResult.getResultCode());
         dappAddress = new Address(createResult.getReturnData());
     }
@@ -145,7 +144,7 @@ public class InstanceOfIntegrationTest {
 
     private boolean callStaticBoolean(String methodName) {
         byte[] argData = ABIUtil.encodeMethodArguments(methodName);
-        TransactionResult result = avmRule.call(deployer, dappAddress, BigInteger.ZERO, argData, ENERGY_LIMIT, ENERGY_PRICE).getTransactionResult();
+        AvmTransactionResult result = avmRule.call(deployer, dappAddress, BigInteger.ZERO, argData, ENERGY_LIMIT, ENERGY_PRICE).getTransactionResult();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result.getResultCode());
         return ((Boolean) ABIUtil.decodeOneObject(result.getReturnData())).booleanValue();
     }

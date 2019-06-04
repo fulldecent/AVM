@@ -16,7 +16,6 @@ import org.aion.avm.core.dappreading.JarBuilder;
 import org.aion.avm.core.util.ABIUtil;
 import org.aion.avm.core.util.CodeAndArguments;
 import org.aion.kernel.AvmTransactionResult;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -42,11 +41,11 @@ public class CircularDependenciesTest {
         DEPLOYER = new AionAddress(DEPLOYER_API.toByteArray());
     }
 
-    private TransactionResult callContract(String method, Object... parameters) {
+    private AvmTransactionResult callContract(String method, Object... parameters) {
         return callContract(DEPLOYER, method, parameters);
     }
 
-    private TransactionResult callContract(AionAddress sender, String method, Object... parameters) {
+    private AvmTransactionResult callContract(AionAddress sender, String method, Object... parameters) {
         byte[] callData = ABIUtil.encodeMethodArguments(method, parameters);
         Address contractAddress = new Address(contract.toByteArray());
         Address senderAddress = new Address(sender.toByteArray());

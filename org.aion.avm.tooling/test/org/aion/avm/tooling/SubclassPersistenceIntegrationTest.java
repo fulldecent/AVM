@@ -3,7 +3,6 @@ package org.aion.avm.tooling;
 import org.aion.avm.core.util.ABIUtil;
 import avm.Address;
 import org.aion.kernel.AvmTransactionResult;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -107,14 +106,14 @@ public class SubclassPersistenceIntegrationTest {
 
     private Address installTestDApp(Class<?> testClass) {
         byte[] txData = avmRule.getDappBytes(testClass, new byte[0]);
-        TransactionResult createResult = avmRule.deploy(avmRule.getPreminedAccount(), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE).getTransactionResult();
+        AvmTransactionResult createResult = avmRule.deploy(avmRule.getPreminedAccount(), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE).getTransactionResult();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, createResult.getResultCode());
         return new Address(createResult.getReturnData());
     }
 
     private int callStaticReturnInteger(Address dapp, String methodName) {
         byte[] argData = ABIUtil.encodeMethodArguments(methodName);
-        TransactionResult result = avmRule.call(avmRule.getPreminedAccount(), dapp, BigInteger.ZERO, argData, ENERGY_LIMIT, ENERGY_PRICE).getTransactionResult();
+        AvmTransactionResult result = avmRule.call(avmRule.getPreminedAccount(), dapp, BigInteger.ZERO, argData, ENERGY_LIMIT, ENERGY_PRICE).getTransactionResult();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result.getResultCode());
         return ((Integer) ABIUtil.decodeOneObject(result.getReturnData())).intValue();
     }
@@ -123,7 +122,7 @@ public class SubclassPersistenceIntegrationTest {
         byte[] txData = avmRule.getDappBytesWithoutOptimization(testClass, new byte[0]);
 
         // Deploy.
-        TransactionResult createResult = avmRule.deploy(avmRule.getPreminedAccount(), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE).getTransactionResult();
+        AvmTransactionResult createResult = avmRule.deploy(avmRule.getPreminedAccount(), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE).getTransactionResult();
         Assert.assertEquals(AvmTransactionResult.Code.FAILED_REJECTED, createResult.getResultCode());
     }
 }

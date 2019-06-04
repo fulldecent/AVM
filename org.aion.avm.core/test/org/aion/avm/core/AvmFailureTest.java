@@ -12,7 +12,6 @@ import org.aion.kernel.TestingBlock;
 import org.aion.kernel.TestingKernel;
 import org.aion.kernel.TestingTransaction;
 import org.aion.vm.api.interfaces.InternalTransactionInterface;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,7 +45,7 @@ public class AvmFailureTest {
         byte[] jar = JarBuilder.buildJarForMainAndClassesAndUserlib(AvmFailureTestResource.class);
         byte[] arguments = null;
         TestingTransaction tx = TestingTransaction.create(deployer, kernel.getNonce(deployer), BigInteger.ZERO, new CodeAndArguments(jar, arguments).encodeToBytes(), energyLimit, energyPrice);
-        TransactionResult txResult = avm.run(this.kernel, new TestingTransaction[] {tx})[0].get();
+        AvmTransactionResult txResult = avm.run(this.kernel, new TestingTransaction[] {tx})[0].get();
 
         dappAddress = new AionAddress(txResult.getReturnData());
         assertTrue(null != dappAddress);
@@ -76,7 +75,7 @@ public class AvmFailureTest {
     public void testOutOfEnergy() {
         byte[] data = ABIUtil.encodeMethodArguments("testOutOfEnergy");
         TestingTransaction tx = TestingTransaction.call(deployer, dappAddress, kernel.getNonce(deployer), BigInteger.ZERO, data, energyLimit, energyPrice);
-        TransactionResult txResult = avm.run(this.kernel, new TestingTransaction[] {tx})[0].get();
+        AvmTransactionResult txResult = avm.run(this.kernel, new TestingTransaction[] {tx})[0].get();
 
         assertEquals(AvmTransactionResult.Code.FAILED_OUT_OF_ENERGY, txResult.getResultCode());
     }
@@ -85,7 +84,7 @@ public class AvmFailureTest {
     public void testOutOfStack() {
         byte[] data = ABIUtil.encodeMethodArguments("testOutOfStack");
         TestingTransaction tx = TestingTransaction.call(deployer, dappAddress, kernel.getNonce(deployer), BigInteger.ZERO, data, energyLimit, energyPrice);
-        TransactionResult txResult = avm.run(this.kernel, new TestingTransaction[] {tx})[0].get();
+        AvmTransactionResult txResult = avm.run(this.kernel, new TestingTransaction[] {tx})[0].get();
 
         assertEquals(AvmTransactionResult.Code.FAILED_OUT_OF_STACK, txResult.getResultCode());
     }
@@ -140,7 +139,7 @@ public class AvmFailureTest {
         byte[] jar = JarBuilder.buildJarForMainAndClassesAndUserlib(AvmFailureTestResource.class);
         byte[] arguments = null;
         TestingTransaction tx = TestingTransaction.create(deployer, kernel.getNonce(deployer), BigInteger.ZERO, new CodeAndArguments(jar, arguments).encodeToBytes(), energyLimit, energyPrice);
-        TransactionResult txResult = avm.run(this.kernel, new TestingTransaction[] {tx})[0].get();
+        AvmTransactionResult txResult = avm.run(this.kernel, new TestingTransaction[] {tx})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, txResult.getResultCode());
         Assert.assertNotNull(new AionAddress(txResult.getReturnData()));
     }
