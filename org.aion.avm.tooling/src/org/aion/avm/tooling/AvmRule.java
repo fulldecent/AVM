@@ -196,11 +196,13 @@ public final class AvmRule implements TestRule {
 
     public static class ResultWrapper {
         AvmTransactionResult result;
-        SideEffects sideEffects;
+        List<Log> logs;
+        List<InternalTransactionInterface> internalTransactions;
 
         ResultWrapper(AvmTransactionResult result) {
             this.result = result;
-            this.sideEffects = result.getSideEffects();
+            this.logs = this.result.getLogs();
+            this.internalTransactions = this.result.getInternalTransactions();
         }
 
         /**
@@ -236,10 +238,10 @@ public final class AvmRule implements TestRule {
         }
 
         /**
-         * @return List of log objects
+         * @return Unmodifiable list of log objects
          */
         public List<Log> getLogs(){
-            return sideEffects.getExecutionLogs();
+            return this.logs;
         }
     }
 }

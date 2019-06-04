@@ -63,10 +63,10 @@ public class AvmFailureTest {
         AvmTransactionResult txResult = (AvmTransactionResult) avm.run(this.kernel, new TestingTransaction[] {tx})[0].get();
 
         assertEquals(AvmTransactionResult.Code.FAILED_REVERT, txResult.getResultCode());
-        assertEquals(5, txResult.getSideEffects().getInternalTransactions().size());
-        assertEquals(0, txResult.getSideEffects().getExecutionLogs().size());
+        assertEquals(5, txResult.getInternalTransactions().size());
+        assertEquals(0, txResult.getLogs().size());
 
-        for (InternalTransactionInterface i : txResult.getSideEffects().getInternalTransactions()) {
+        for (InternalTransactionInterface i : txResult.getInternalTransactions()) {
             assertTrue(i.isRejected());
         }
     }
