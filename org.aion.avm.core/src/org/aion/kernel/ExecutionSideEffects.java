@@ -25,7 +25,7 @@ public final class ExecutionSideEffects {
 
     private ExecutionSideEffects() {
         this.sideEffectsStack = new Stack<>();
-        this.sideEffectsStack.push(new SideEffects());
+        this.sideEffectsStack.push(SideEffects.emptySideEffects());
     }
 
     public static ExecutionSideEffects newSideEffectsForExternalTransaction() {
@@ -36,7 +36,7 @@ public final class ExecutionSideEffects {
      * Adds a new side effects entry for the specified internal transaction.
      */
     public void startNewInternalTransactionEntry(InternalTransactionInterface internalTransaction) {
-        SideEffects sideEffects = SideEffectsUtil.addInternalTransaction(new SideEffects(), internalTransaction);
+        SideEffects sideEffects = SideEffectsUtil.addInternalTransaction(SideEffects.emptySideEffects(), internalTransaction);
         this.sideEffectsStack.push(sideEffects);
     }
 
