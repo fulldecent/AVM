@@ -1,5 +1,6 @@
 package org.aion.rules;
 
+import org.aion.aion_types.AionAddress;
 import org.aion.avm.core.util.ABIUtil;
 import avm.Address;
 import org.aion.avm.core.util.LogSizeUtils;
@@ -75,7 +76,7 @@ public class JUnitRuleTest {
 
         Assert.assertTrue(result.getReceiptStatus().isSuccess());
         Assert.assertEquals(2, result.getLogs().size());
-        assertEquals(dappAddr, new Address(result.getLogs().get(0).getSourceAddress().toBytes()));
+        assertEquals(dappAddr, new Address(result.getLogs().get(0).getSourceAddress().toByteArray()));
         assertArrayEquals(new byte[]{ 0x1 }, result.getLogs().get(0).getData());
         assertArrayEquals(LogSizeUtils.truncatePadTopic(new byte[]{ 0xf, 0xe, 0xd, 0xc, 0xb, 0xa }), result.getLogs().get(1).getTopics().get(0));
     }
@@ -87,13 +88,13 @@ public class JUnitRuleTest {
         TransactionResult result = avmRule.balanceTransfer(preminedAccount, to, BigInteger.valueOf(100L), 21000, 1L).getTransactionResult();
 
         assertTrue(result.getResultCode().isSuccess());
-        assertEquals(BigInteger.valueOf(100L), avmRule.kernel.getBalance(org.aion.types.Address.wrap(to.toByteArray())));
+        assertEquals(BigInteger.valueOf(100L), avmRule.kernel.getBalance(new AionAddress(to.toByteArray())));
 
         // balance transfer to contract
         result = avmRule.balanceTransfer(preminedAccount, dappAddr, BigInteger.valueOf(100L), 51000, 1L).getTransactionResult();
 
         assertTrue(result.getResultCode().isSuccess());
-        assertEquals(BigInteger.valueOf(100L), avmRule.kernel.getBalance(org.aion.types.Address.wrap(dappAddr.toByteArray())));
+        assertEquals(BigInteger.valueOf(100L), avmRule.kernel.getBalance(new AionAddress(dappAddr.toByteArray())));
 
     }
 }

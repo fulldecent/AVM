@@ -1,5 +1,6 @@
 package org.aion.avm.tooling;
 
+import org.aion.aion_types.AionAddress;
 import org.aion.avm.core.util.ABIUtil;
 import avm.Address;
 import org.aion.avm.core.util.Helpers;
@@ -119,7 +120,7 @@ public class BadDestinationTest {
     }
 
     private void addCodeToAddress(Address address) {
-        avmRule.kernel.setTransformedCode(org.aion.types.Address.wrap(address.toByteArray()), new byte[1]);
+        avmRule.kernel.setTransformedCode(new AionAddress(address.toByteArray()), new byte[1]);
     }
 
 }

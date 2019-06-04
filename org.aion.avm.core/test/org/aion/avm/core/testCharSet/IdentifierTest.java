@@ -4,6 +4,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.math.BigInteger;
+import org.aion.aion_types.AionAddress;
 import org.aion.avm.core.AvmConfiguration;
 import org.aion.avm.core.AvmImpl;
 import org.aion.avm.core.CommonAvmFactory;
@@ -26,8 +27,8 @@ public class IdentifierTest {
     private TestingBlock block = new TestingBlock(new byte[32], 1, Helpers.randomAddress(),
         System.currentTimeMillis(), new byte[0]);
 
-    private org.aion.types.Address deployer = TestingKernel.PREMINED_ADDRESS;
-    private org.aion.types.Address dappAddress;
+    private AionAddress deployer = TestingKernel.PREMINED_ADDRESS;
+    private AionAddress dappAddress;
 
     private TestingKernel kernel;
     private AvmImpl avm;
@@ -52,7 +53,7 @@ public class IdentifierTest {
             new CodeAndArguments(jar, null).encodeToBytes(), energyLimit, energyPrice);
         TransactionResult txResult = avm.run(this.kernel, new TestingTransaction[]{tx})[0].get();
 
-        dappAddress = org.aion.types.Address.wrap(txResult.getReturnData());
+        dappAddress = new AionAddress(txResult.getReturnData());
         assertNotNull(dappAddress);
 
         byte[] argData = ABIUtil.encodeMethodArguments("sayHelloEN");
@@ -122,7 +123,7 @@ public class IdentifierTest {
             new CodeAndArguments(jar, null).encodeToBytes(), energyLimit, energyPrice);
         TransactionResult txResult = avm.run(this.kernel, new TestingTransaction[]{tx})[0].get();
 
-        dappAddress = org.aion.types.Address.wrap(txResult.getReturnData());
+        dappAddress = new AionAddress(txResult.getReturnData());
         assertNotNull(dappAddress);
 
         byte[] argData = ABIUtil.encodeMethodArguments("callInnerClass1");
@@ -149,7 +150,7 @@ public class IdentifierTest {
         TestingTransaction tx = TestingTransaction.create(deployer, kernel.getNonce(deployer), BigInteger.ZERO,
             new CodeAndArguments(jar, null).encodeToBytes(), energyLimit, energyPrice);
         TransactionResult txResult = avm.run(this.kernel, new TestingTransaction[]{tx})[0].get();
-        dappAddress = org.aion.types.Address.wrap(txResult.getReturnData());
+        dappAddress = new AionAddress(txResult.getReturnData());
         assertNotNull(dappAddress);
 
         byte[] invalidCode = new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,

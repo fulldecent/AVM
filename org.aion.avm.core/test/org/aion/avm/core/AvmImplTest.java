@@ -1,8 +1,9 @@
 package org.aion.avm.core;
 
+import avm.Address;
 import java.math.BigInteger;
 
-import avm.Address;
+import org.aion.aion_types.AionAddress;
 import org.aion.avm.core.blockchainruntime.EmptyCapabilities;
 import org.aion.avm.core.classloading.AvmClassLoader;
 import org.aion.avm.core.dappreading.JarBuilder;
@@ -46,7 +47,7 @@ import static org.junit.Assert.assertTrue;
 
 
 public class AvmImplTest {
-    private static org.aion.types.Address deployer = TestingKernel.PREMINED_ADDRESS;
+    private static AionAddress deployer = TestingKernel.PREMINED_ADDRESS;
     private static TestingBlock block;
 
     @Rule
@@ -62,13 +63,14 @@ public class AvmImplTest {
         TestingKernel kernel = new TestingKernel(block);
         AvmImpl avm = CommonAvmFactory.buildAvmInstanceForConfiguration(new EmptyCapabilities(), new AvmConfiguration());
 
-        org.aion.types.Address from = deployer;
-        org.aion.types.Address to = org.aion.types.Address.wrap(new byte[32]);
+        AionAddress from = deployer;
+        AionAddress to = new AionAddress(new byte[32]);
         BigInteger value = BigInteger.valueOf(1000L);
         byte[] data = "data".getBytes();
         long energyLimit = 50_000L;
         long energyPrice = 1L;
-        TestingTransaction tx = TestingTransaction.call(from, to, kernel.getNonce(from), value, data, energyLimit, energyPrice);
+        TestingTransaction tx = TestingTransaction.call(from, to, kernel.getNonce(
+            from), value, data, energyLimit, energyPrice);
         AvmTransactionResult result = (AvmTransactionResult) avm.run(kernel, new TestingTransaction[] { tx })[0].get();
 
         // verify results
@@ -92,8 +94,8 @@ public class AvmImplTest {
         TestingKernel kernel = new TestingKernel(block);
         AvmImpl avm = CommonAvmFactory.buildAvmInstanceForConfiguration(new EmptyCapabilities(), new AvmConfiguration());
 
-        org.aion.types.Address from = deployer;
-        org.aion.types.Address to = org.aion.types.Address.wrap(new byte[32]);
+        AionAddress from = deployer;
+        AionAddress to = new AionAddress(new byte[32]);
         // large value that caused issues when not specifically interpreted as a positive integer
         BigInteger value = BigInteger.valueOf(13).multiply(BigInteger.TEN.pow(18));
         byte[] data = new byte[0];
@@ -127,15 +129,15 @@ public class AvmImplTest {
             }
 
             @Override
-            public org.aion.types.Address getSenderAddress() {
+            public AionAddress getSenderAddress() {
                 return tx.getSenderAddress();
             }
 
             @Override
-            public org.aion.types.Address getDestinationAddress() { return tx.getDestinationAddress(); }
+            public AionAddress getDestinationAddress() { return tx.getDestinationAddress(); }
 
             @Override
-            public org.aion.types.Address getContractAddress() {
+            public AionAddress getContractAddress() {
                 return tx.getContractAddress();
             }
 
@@ -276,7 +278,7 @@ public class AvmImplTest {
         TransactionResult result1 = avm.run(kernel, new TestingTransaction[] {tx1})[0].get();
         assertEquals(AvmTransactionResult.Code.SUCCESS, result1.getResultCode());
 
-        Address contractAddr = new Address(result1.getReturnData());
+        AionAddress contractAddr = new AionAddress(result1.getReturnData());
 
         // Account for the cost:  deployment, clinit, init call.
         long basicCost = BillingRules.getBasicTransactionCost(txData);
@@ -290,7 +292,7 @@ public class AvmImplTest {
 
         // call (1 -> 2 -> 2)
         long transaction2EnergyLimit = 1_000_000l;
-        TestingTransaction tx2 = TestingTransaction.call(deployer, org.aion.types.Address.wrap(contractAddr.toByteArray()), kernel.getNonce(deployer), BigInteger.ZERO, contractAddr.toByteArray(), transaction2EnergyLimit, energyPrice);
+        TestingTransaction tx2 = TestingTransaction.call(deployer, contractAddr, kernel.getNonce(deployer), BigInteger.ZERO, contractAddr.toByteArray(), transaction2EnergyLimit, energyPrice);
         TransactionResult result2 = avm.run(kernel, new TestingTransaction[] {tx2})[0].get();
         assertEquals(AvmTransactionResult.Code.SUCCESS, result2.getResultCode());
         assertArrayEquals("CALL".getBytes(), result2.getReturnData());
@@ -318,7 +320,7 @@ public class AvmImplTest {
         AvmImpl avm = CommonAvmFactory.buildAvmInstanceForConfiguration(new EmptyCapabilities(), new AvmConfiguration());
         
         // deploy
-        Address contractAddr = createDApp(kernel, avm, txData);
+        AionAddress contractAddr = createDApp(kernel, avm, txData);
         
         // Call the callSelfForNull entry-point and it should return null to us.
         byte[] argData = ABIUtil.encodeMethodArguments("callSelfForNull");
@@ -336,7 +338,7 @@ public class AvmImplTest {
         
         // deploy
         long energyLimit = 10_000_000l;
-        Address contractAddr = createDApp(kernel, avm, txData);
+        AionAddress contractAddr = createDApp(kernel, avm, txData);
         
         // Try a few invocations of different depths, bearing in mind the change of nextHashCode between each invocation.
         // We will do 2 zero-depth calls to see the delta between the 2 calls.
@@ -368,7 +370,7 @@ public class AvmImplTest {
         AvmImpl avm = CommonAvmFactory.buildAvmInstanceForConfiguration(new EmptyCapabilities(), new AvmConfiguration());
         
         // deploy
-        Address contractAddr = createDApp(kernel, avm, txData);
+        AionAddress contractAddr = createDApp(kernel, avm, txData);
         
         // Get direct increments from 1 to 2 and returns 2.
         assertEquals(2, callReentrantAccess(kernel, avm, contractAddr, "getDirect", shouldFail));
@@ -396,7 +398,7 @@ public class AvmImplTest {
         AvmImpl avm = CommonAvmFactory.buildAvmInstanceForConfiguration(new EmptyCapabilities(), new AvmConfiguration());
         
         // deploy
-        Address contractAddr = createDApp(kernel, avm, txData);
+        AionAddress contractAddr = createDApp(kernel, avm, txData);
         
         // We expect these to all fail, so they should be left with the initial values:  1.
         assertEquals(1, callReentrantAccess(kernel, avm, contractAddr, "getDirect", shouldFail));
@@ -419,11 +421,11 @@ public class AvmImplTest {
         
         // deploy
         long energyLimit = 1_000_000l;
-        Address contractAddr = createDApp(kernel, avm, txData);
+        AionAddress contractAddr = createDApp(kernel, avm, txData);
         
         // Cause the failure.
         byte[] nearData = ABIUtil.encodeMethodArguments("localFailAfterReentrant");
-        TestingTransaction tx = TestingTransaction.call(deployer, org.aion.types.Address.wrap(contractAddr.toByteArray()), kernel.getNonce(deployer), BigInteger.ZERO, nearData, energyLimit, 1L);
+        TestingTransaction tx = TestingTransaction.call(deployer, contractAddr, kernel.getNonce(deployer), BigInteger.ZERO, nearData, energyLimit, 1L);
         TransactionResult result2 = avm.run(kernel, new TestingTransaction[] {tx})[0].get();
         assertEquals(AvmTransactionResult.Code.FAILED_OUT_OF_ENERGY, result2.getResultCode());
         
@@ -447,7 +449,7 @@ public class AvmImplTest {
         AvmImpl avm = CommonAvmFactory.buildAvmInstanceForConfiguration(new EmptyCapabilities(), new AvmConfiguration());
         
         // deploy
-        Address contractAddr = createDApp(kernel, avm, txData);
+        AionAddress contractAddr = createDApp(kernel, avm, txData);
         
         // We just want to call our special getFar helper with a constrained energy.
         // WARNING:  This test is very sensitive to storage billing configuration so the energy limit likely needs to be updated when that changes.
@@ -474,7 +476,7 @@ public class AvmImplTest {
         AvmImpl avm = CommonAvmFactory.buildAvmInstanceForConfiguration(new EmptyCapabilities(), new AvmConfiguration());
         
         // deploy
-        Address contractAddr = createDApp(kernel, avm, txData);
+        AionAddress contractAddr = createDApp(kernel, avm, txData);
         
         // We just want to call our special getFar helper with a constrained energy.
         // WARNING:  This test is very sensitive to storage billing configuration so the energy limit likely needs to be updated when that changes.
@@ -500,11 +502,11 @@ public class AvmImplTest {
         AvmImpl avm = CommonAvmFactory.buildAvmInstanceForConfiguration(new EmptyCapabilities(), new AvmConfiguration());
 
         // deploy
-        Address contractAddr = createDApp(kernel, avm, txData);
+        AionAddress contractAddr = createDApp(kernel, avm, txData);
 
         // Verify the internal call depth limit is in effect.
         byte[] callData = ABIUtil.encodeMethodArguments("recursiveChangeNested", 0, 10);
-        TestingTransaction tx = TestingTransaction.call(deployer, org.aion.types.Address.wrap(contractAddr.toByteArray()), kernel.getNonce(deployer), BigInteger.ZERO, callData, 20_000_000l, 1L);
+        TestingTransaction tx = TestingTransaction.call(deployer, contractAddr, kernel.getNonce(deployer), BigInteger.ZERO, callData, 20_000_000l, 1L);
         TransactionResult result2 = avm.run(kernel, new TestingTransaction[] {tx})[0].get();
         assertEquals(AvmTransactionResult.Code.FAILED_EXCEPTION, result2.getResultCode());
 
@@ -525,7 +527,7 @@ public class AvmImplTest {
         AvmImpl avm = CommonAvmFactory.buildAvmInstanceForConfiguration(new EmptyCapabilities(), new AvmConfiguration());
         
         // CREATE the spawner.
-        Address spawnerAddress = createDApp(kernel, avm, spanerCreateData);
+        AionAddress spawnerAddress = createDApp(kernel, avm, spanerCreateData);
         
         // CALL to create and invoke the incrementor.
         byte[] input = new byte[] {1,2,3,4,5};
@@ -555,7 +557,7 @@ public class AvmImplTest {
         AvmImpl avm = CommonAvmFactory.buildAvmInstanceForConfiguration(new EmptyCapabilities(), new AvmConfiguration());
         
         // CREATE the spawner.
-        Address spawnerAddress = createDApp(kernel, avm, spanerCreateData);
+        AionAddress spawnerAddress = createDApp(kernel, avm, spanerCreateData);
         
         // CALL to create and invoke the incrementor.
         boolean shouldFail = false;
@@ -566,7 +568,7 @@ public class AvmImplTest {
         byte[] input = new byte[] {1,2,3,4,5};
         byte[] incrementorCallData = ABIUtil.encodeMethodArguments("incrementArray", input);
         
-        byte[] incrementorResult = (byte[]) callDApp(kernel, avm, incrementorAddress, incrementorCallData);
+        byte[] incrementorResult = (byte[]) callDApp(kernel, avm, new AionAddress(incrementorAddress.toByteArray()), incrementorCallData);
         assertEquals(input.length, incrementorResult.length);
         for (int i = 0; i < input.length; ++i) {
             assertEquals(incrementBy + input[i], incrementorResult[i]);
@@ -588,13 +590,13 @@ public class AvmImplTest {
         AvmImpl avm = CommonAvmFactory.buildAvmInstanceForConfiguration(new EmptyCapabilities(), new AvmConfiguration());
         
         // CREATE the spawner.
-        Address spawnerAddress = createDApp(kernel, avm, spanerCreateData);
+        AionAddress spawnerAddress = createDApp(kernel, avm, spanerCreateData);
         
         // CALL to create and invoke the incrementor.
         boolean shouldFail = true;
         byte[] spawnerCallData = ABIUtil.encodeMethodArguments("spawnOnly", shouldFail);
         long energyLimit = 1_000_000l;
-        TestingTransaction tx = TestingTransaction.call(TestingKernel.PREMINED_ADDRESS, org.aion.types.Address.wrap(spawnerAddress.toByteArray()), kernel.getNonce(deployer), BigInteger.ZERO, spawnerCallData, energyLimit, 1L);
+        TestingTransaction tx = TestingTransaction.call(TestingKernel.PREMINED_ADDRESS, spawnerAddress, kernel.getNonce(deployer), BigInteger.ZERO, spawnerCallData, energyLimit, 1L);
         TransactionResult result2 = avm.run(kernel, new TestingTransaction[] {tx})[0].get();
         assertEquals(AvmTransactionResult.Code.FAILED_INVALID, result2.getResultCode());
         avm.shutdown();
@@ -619,7 +621,7 @@ public class AvmImplTest {
         assertEquals(1, directory.listFiles().length);
         
         // CREATE the spawner (meaning another account). Expect 3 accounts because: deployer, contract, coinbase
-        Address spawnerAddress = createDApp(kernel, avm, spanerCreateData);
+        AionAddress spawnerAddress = createDApp(kernel, avm, spanerCreateData);
         assertEquals(3, directory.listFiles().length);
         
         // CALL to create and invoke the incrementor. Expect 4 accounts because: deployer, contract1, contract2, coinbase
@@ -637,7 +639,7 @@ public class AvmImplTest {
         byte[] input = new byte[] {1,2,3,4,5};
         byte[] incrementorCallData = ABIUtil.encodeMethodArguments("incrementArray", input);
         
-        byte[] incrementorResult = (byte[]) callDApp(kernel, avm, incrementorAddress, incrementorCallData);
+        byte[] incrementorResult = (byte[]) callDApp(kernel, avm, new AionAddress(incrementorAddress.toByteArray()), incrementorCallData);
         assertEquals(input.length, incrementorResult.length);
         for (int i = 0; i < input.length; ++i) {
             assertEquals(incrementBy + input[i], incrementorResult[i]);
@@ -701,7 +703,7 @@ public class AvmImplTest {
         
         TransactionResult createResult = createDAppCanFail(kernel, avm, spawnerCreateData);
         assertEquals(AvmTransactionResult.Code.SUCCESS, createResult.getResultCode());
-        Address spawnerAddress = new Address(createResult.getReturnData());
+        AionAddress spawnerAddress = new AionAddress(createResult.getReturnData());
         assertNotNull(spawnerAddress);
         avm.shutdown();
     }
@@ -722,15 +724,15 @@ public class AvmImplTest {
     }
 
 
-    private int callRecursiveHash(KernelInterface kernel, AvmImpl avm, long energyLimit, Address contractAddr, int depth) {
+    private int callRecursiveHash(KernelInterface kernel, AvmImpl avm, long energyLimit, AionAddress contractAddr, int depth) {
         byte[] argData = ABIUtil.encodeMethodArguments("getRecursiveHashCode", depth);
-        TestingTransaction call = TestingTransaction.call(deployer, org.aion.types.Address.wrap(contractAddr.toByteArray()), kernel.getNonce(deployer), BigInteger.ZERO, argData, energyLimit, 1L);
+        TestingTransaction call = TestingTransaction.call(deployer, contractAddr, kernel.getNonce(deployer), BigInteger.ZERO, argData, energyLimit, 1L);
         TransactionResult result = avm.run(kernel, new TestingTransaction[] {call})[0].get();
         assertEquals(AvmTransactionResult.Code.SUCCESS, result.getResultCode());
         return ((Integer) ABIUtil.decodeOneObject(result.getReturnData())).intValue();
     }
 
-    private int callReentrantAccess(KernelInterface kernel, AvmImpl avm, Address contractAddr, String methodName, boolean shouldFail) {
+    private int callReentrantAccess(KernelInterface kernel, AvmImpl avm, AionAddress contractAddr, String methodName, boolean shouldFail) {
         byte[] nearData = ABIUtil.encodeMethodArguments(methodName, shouldFail);
         Object resultObject = callDApp(kernel, avm, contractAddr, nearData);
         return ((Integer)resultObject).intValue();
@@ -741,10 +743,10 @@ public class AvmImplTest {
         return (4 + 4 + string.getBytes(StandardCharsets.UTF_8).length);
     }
 
-    private Address createDApp(KernelInterface kernel, AvmImpl avm, byte[] createData) {
+    private AionAddress createDApp(KernelInterface kernel, AvmImpl avm, byte[] createData) {
         TransactionResult result1 = createDAppCanFail(kernel, avm, createData);
         assertEquals(AvmTransactionResult.Code.SUCCESS, result1.getResultCode());
-        return new Address(result1.getReturnData());
+        return new AionAddress(result1.getReturnData());
     }
 
     private TransactionResult createDAppCanFail(KernelInterface kernel, AvmImpl avm, byte[] createData) {
@@ -754,9 +756,9 @@ public class AvmImplTest {
         return avm.run(kernel, new TestingTransaction[] {tx1})[0].get();
     }
 
-    private Object callDApp(KernelInterface kernel, AvmImpl avm, Address dAppAddress, byte[] argData) {
+    private Object callDApp(KernelInterface kernel, AvmImpl avm, AionAddress dAppAddress, byte[] argData) {
         long energyLimit = 5_000_000l;
-        TestingTransaction tx = TestingTransaction.call(deployer, org.aion.types.Address.wrap(dAppAddress.toByteArray()), kernel.getNonce(deployer), BigInteger.ZERO, argData, energyLimit, 1L);
+        TestingTransaction tx = TestingTransaction.call(deployer, dAppAddress, kernel.getNonce(deployer), BigInteger.ZERO, argData, energyLimit, 1L);
         TransactionResult result2 = avm.run(kernel, new TestingTransaction[] {tx})[0].get();
         assertEquals(AvmTransactionResult.Code.SUCCESS, result2.getResultCode());
         return ABIUtil.decodeOneObject(result2.getReturnData());

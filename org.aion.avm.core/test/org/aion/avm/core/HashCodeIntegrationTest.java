@@ -2,6 +2,7 @@ package org.aion.avm.core;
 
 import java.math.BigInteger;
 
+import org.aion.aion_types.AionAddress;
 import org.aion.avm.core.blockchainruntime.EmptyCapabilities;
 import org.aion.avm.core.dappreading.JarBuilder;
 import org.aion.avm.core.util.CodeAndArguments;
@@ -12,7 +13,6 @@ import org.aion.kernel.AvmTransactionResult;
 import org.aion.kernel.TestingBlock;
 import org.aion.kernel.TestingKernel;
 import org.aion.kernel.TestingTransaction;
-import avm.Address;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,7 +23,7 @@ import org.junit.Test;
  * Tests the hashCode behaviour of the contract code, when invoked within independent transactions.
  */
 public class HashCodeIntegrationTest {
-    private org.aion.types.Address deployer = TestingKernel.PREMINED_ADDRESS;
+    private AionAddress deployer = TestingKernel.PREMINED_ADDRESS;
     private TestingKernel kernel;
     private AvmImpl avm;
 
@@ -49,11 +49,12 @@ public class HashCodeIntegrationTest {
         // Deploy.
         long energyLimit = 10_000_000l;
         long energyPrice = 1l;
-        TestingTransaction create = TestingTransaction.create(deployer, kernel.getNonce(deployer), BigInteger.ZERO, txData, energyLimit, energyPrice);
+        TestingTransaction create = TestingTransaction.create(deployer, kernel.getNonce(
+            deployer), BigInteger.ZERO, txData, energyLimit, energyPrice);
         AvmTransactionResult createResult = (AvmTransactionResult) avm.run(this.kernel, new TestingTransaction[] {create})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, createResult.getResultCode());
 
-        Address contractAddr = new Address(createResult.getReturnData());
+        AionAddress contractAddr = new AionAddress(createResult.getReturnData());
         // Store an object.
         int systemHash = callStatic(block, contractAddr, "persistNewObject");
         // We know that this is the current value, but that may change in the future.
@@ -64,10 +65,11 @@ public class HashCodeIntegrationTest {
     }
 
 
-    private int callStatic(TestingBlock block, Address contractAddr, String methodName) {
+    private int callStatic(TestingBlock block, AionAddress contractAddr, String methodName) {
         long energyLimit = 1_000_000l;
         byte[] argData = ABIUtil.encodeMethodArguments(methodName);
-        TestingTransaction call = TestingTransaction.call(deployer, org.aion.types.Address.wrap(contractAddr.toByteArray()), kernel.getNonce(deployer), BigInteger.ZERO, argData, energyLimit, 1l);
+        TestingTransaction call = TestingTransaction.call(deployer,contractAddr, kernel.getNonce(
+            deployer), BigInteger.ZERO, argData, energyLimit, 1l);
         AvmTransactionResult result = (AvmTransactionResult) avm.run(this.kernel, new TestingTransaction[] {call})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result.getResultCode());
         ABIDecoder decoder = new ABIDecoder(result.getReturnData());

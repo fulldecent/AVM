@@ -1,6 +1,7 @@
 package org.aion.avm.tooling.blockchainruntime;
 
 import avm.Address;
+import org.aion.aion_types.AionAddress;
 import org.aion.avm.core.util.ABIUtil;
 import org.aion.avm.tooling.AvmRule;
 import org.aion.avm.tooling.AvmRule.ResultWrapper;
@@ -182,15 +183,15 @@ public class BlockchainGetDataTest {
     }
 
     private void testGetBlockCoinbaseThenModify(boolean isModify) {
-        org.aion.types.Address blockCoinbase = avmRule.kernel.getMinerAddress();
-        Address expected = new Address(blockCoinbase.toBytes().clone());
+        AionAddress blockCoinbase = avmRule.kernel.getMinerAddress();
+        Address expected = new Address(blockCoinbase.toByteArray().clone());
 
         ResultWrapper result = call("getBlockCoinbaseAndModify", isModify);
 
         Assert.assertTrue(result.getReceiptStatus().isSuccess());
         // AKI-143: It is now not possible to modify an Address.
         Assert.assertEquals(false, new String((byte[]) result.getDecodedReturnData()).startsWith("modified!"));
-        Assert.assertArrayEquals(expected.toByteArray(), blockCoinbase.toBytes());
+        Assert.assertArrayEquals(expected.toByteArray(), blockCoinbase.toByteArray());
     }
 
     @Test

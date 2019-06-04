@@ -2,6 +2,7 @@ package org.aion.avm.core;
 
 import java.math.BigInteger;
 
+import org.aion.aion_types.AionAddress;
 import org.aion.avm.core.blockchainruntime.EmptyCapabilities;
 import org.aion.avm.core.dappreading.JarBuilder;
 import org.aion.avm.core.util.CodeAndArguments;
@@ -10,7 +11,6 @@ import org.aion.kernel.AvmTransactionResult;
 import org.aion.kernel.TestingBlock;
 import org.aion.kernel.TestingKernel;
 import org.aion.kernel.TestingTransaction;
-import avm.Address;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,7 +22,7 @@ import org.junit.Test;
  * that constants are being correctly loaded, and can be referenced from, the constant class.
  */
 public class ConstantLoadingIntegrationTest {
-    private org.aion.types.Address deployer = TestingKernel.PREMINED_ADDRESS;
+    private AionAddress deployer = TestingKernel.PREMINED_ADDRESS;
     private TestingKernel kernel;
     private AvmImpl avm;
 
@@ -42,7 +42,7 @@ public class ConstantLoadingIntegrationTest {
 
     @Test
     public void testCreation() throws Exception {
-        Address contractAddr = deploy();
+        AionAddress contractAddr = deploy();
         
         // Test just the creation modes.
         int bareHash = 59;
@@ -60,7 +60,7 @@ public class ConstantLoadingIntegrationTest {
 
     @Test
     public void testPersistence() throws Exception {
-        Address contractAddr = deploy();
+        AionAddress contractAddr = deploy();
         
         // Run the creation and then test the read calls.
         callStatic(block, contractAddr, 0);
@@ -80,24 +80,25 @@ public class ConstantLoadingIntegrationTest {
     }
 
 
-    private Address deploy() {
+    private AionAddress deploy() {
         byte[] jar = JarBuilder.buildJarForMainAndClassesAndUserlib(ConstantLoadingIntegrationTestTarget.class);
         byte[] txData = new CodeAndArguments(jar, new byte[0]).encodeToBytes();
         
         // Deploy.
         long energyLimit = 10_000_000l;
         long energyPrice = 1l;
-        TestingTransaction create = TestingTransaction.create(deployer, kernel.getNonce(deployer), BigInteger.ZERO, txData, energyLimit, energyPrice);
+        TestingTransaction create = TestingTransaction.create(deployer, kernel.getNonce(
+            deployer), BigInteger.ZERO, txData, energyLimit, energyPrice);
         AvmTransactionResult createResult = (AvmTransactionResult) avm.run(this.kernel, new TestingTransaction[] {create})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, createResult.getResultCode());
 
-        return new Address(createResult.getReturnData());
+        return new AionAddress(createResult.getReturnData());
     }
 
-    private byte[] callStatic(TestingBlock block, Address contractAddr, int code) {
+    private byte[] callStatic(TestingBlock block, AionAddress contractAddr, int code) {
         long energyLimit = 1_000_000l;
         byte[] argData = new byte[] { (byte)code };
-        TestingTransaction call = TestingTransaction.call(deployer, org.aion.types.Address.wrap(contractAddr.toByteArray()), kernel.getNonce(deployer), BigInteger.ZERO, argData, energyLimit, 1l);
+        TestingTransaction call = TestingTransaction.call(deployer, contractAddr, kernel.getNonce(deployer), BigInteger.ZERO, argData, energyLimit, 1l);
         AvmTransactionResult result = (AvmTransactionResult) avm.run(this.kernel, new TestingTransaction[] {call})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result.getResultCode());
         return result.getReturnData();

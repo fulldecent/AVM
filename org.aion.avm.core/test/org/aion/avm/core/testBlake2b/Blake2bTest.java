@@ -2,6 +2,7 @@ package org.aion.avm.core.testBlake2b;
 
 import java.math.BigInteger;
 
+import org.aion.aion_types.AionAddress;
 import org.aion.avm.core.AvmConfiguration;
 import org.aion.avm.core.AvmImpl;
 import org.aion.avm.core.CommonAvmFactory;
@@ -24,8 +25,8 @@ public class Blake2bTest {
     private long energyPrice = 1L;
     private TestingBlock block = new TestingBlock(new byte[32], 1, Helpers.randomAddress(), System.currentTimeMillis(), new byte[0]);
 
-    private org.aion.types.Address deployer = TestingKernel.PREMINED_ADDRESS;
-    private org.aion.types.Address dappAddress;
+    private AionAddress deployer = TestingKernel.PREMINED_ADDRESS;
+    private AionAddress dappAddress;
 
     private TestingKernel kernel;
     private AvmImpl avm;
@@ -41,7 +42,7 @@ public class Blake2bTest {
         TransactionResult txResult = avm.run(this.kernel, new TestingTransaction[] {tx})[0].get();
         System.out.println(txResult);
 
-        dappAddress = org.aion.types.Address.wrap(txResult.getReturnData());
+        dappAddress = new AionAddress(txResult.getReturnData());
         assertNotNull(dappAddress);
     }
 

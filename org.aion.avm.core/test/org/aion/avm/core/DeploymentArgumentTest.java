@@ -1,6 +1,6 @@
 package org.aion.avm.core;
 
-import avm.Address;
+import org.aion.aion_types.AionAddress;
 import org.aion.avm.core.blockchainruntime.EmptyCapabilities;
 import org.aion.avm.core.dappreading.JarBuilder;
 import org.aion.avm.core.util.CodeAndArguments;
@@ -27,7 +27,8 @@ import org.junit.Test;
 public class DeploymentArgumentTest {
     private static final long ENERGY_LIMIT = 100_000_000_000L;
     private static final long ENERGY_PRICE = 1L;
-    private static final org.aion.types.Address DEPLOYER = TestingKernel.PREMINED_ADDRESS;
+    private static final AionAddress DEPLOYER = TestingKernel.PREMINED_ADDRESS;
+    private static final avm.Address DEPLOYER_API = new avm.Address(DEPLOYER.toByteArray());
     private static final byte[] JAR = JarBuilder.buildJarForMainAndClassesAndUserlib(DeploymentArgumentTarget.class);
     private static final byte[] SMALL_JAR = JarBuilder.buildJarForMainAndClasses(DeploymentArgumentSmallTarget.class);
 
@@ -49,13 +50,13 @@ public class DeploymentArgumentTest {
 
     @Test
     public void testCorrectArguments() {
-        AvmTransactionResult result = deployContract("string", new Address[] {new Address(DEPLOYER.toBytes())}, (int)5, (double)6.7, SMALL_JAR);
+        AvmTransactionResult result = deployContract("string", new avm.Address[] {DEPLOYER_API}, (int)5, (double)6.7, SMALL_JAR);
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result.getResultCode());
     }
 
     @Test
     public void testIncorrectArguments() {
-        AvmTransactionResult result = deployContract(new String[] {"string", "wrong"}, new Address[] {new Address(DEPLOYER.toBytes())}, (int)5, (double)6.7);
+        AvmTransactionResult result = deployContract(new String[] {"string", "wrong"}, new avm.Address[] {DEPLOYER_API}, (int)5, (double)6.7);
         Assert.assertEquals(AvmTransactionResult.Code.FAILED_EXCEPTION, result.getResultCode());
     }
 
@@ -67,20 +68,20 @@ public class DeploymentArgumentTest {
 
     @Test
     public void testCorrectSubDeployment() {
-        AvmTransactionResult result = deployContract("string", new Address[] {new Address(DEPLOYER.toBytes())}, (int)5, (double)6.7, SMALL_JAR);
+        AvmTransactionResult result = deployContract("string", new avm.Address[] {DEPLOYER_API}, (int)5, (double)6.7, SMALL_JAR);
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result.getResultCode());
-        
-        org.aion.types.Address target = new org.aion.types.Address(result.getReturnData());
+
+        AionAddress target = new AionAddress(result.getReturnData());
         AvmTransactionResult callResult = callContract(target, "correctDeployment");
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, callResult.getResultCode());
     }
 
     @Test
     public void testIncorrectSubDeployment() {
-        AvmTransactionResult result = deployContract("string", new Address[] {new Address(DEPLOYER.toBytes())}, (int)5, (double)6.7, SMALL_JAR);
+        AvmTransactionResult result = deployContract("string", new avm.Address[] {DEPLOYER_API}, (int)5, (double)6.7, SMALL_JAR);
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result.getResultCode());
         
-        org.aion.types.Address target = new org.aion.types.Address(result.getReturnData());
+        AionAddress target = new AionAddress(result.getReturnData());
         AvmTransactionResult callResult = callContract(target, "incorrectDeployment");
         // (note that this is still a success since the call expects to fail, internally)
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, callResult.getResultCode());
@@ -94,7 +95,7 @@ public class DeploymentArgumentTest {
         return (AvmTransactionResult)this.avm.run(this.kernel, new TestingTransaction[] {create})[0].get();
     }
 
-    private AvmTransactionResult callContract(org.aion.types.Address target, String methodName) {
+    private AvmTransactionResult callContract(AionAddress target, String methodName) {
         byte[] argData = ABIUtil.encodeMethodArguments(methodName);
         TestingTransaction call = TestingTransaction.call(DEPLOYER, target, kernel.getNonce(DEPLOYER), BigInteger.ZERO, argData, ENERGY_LIMIT, ENERGY_PRICE);
         AvmTransactionResult result = (AvmTransactionResult) avm.run(this.kernel, new TestingTransaction[] {call})[0].get();
