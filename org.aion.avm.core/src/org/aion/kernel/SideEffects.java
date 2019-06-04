@@ -1,11 +1,9 @@
 package org.aion.kernel;
 
 import i.RuntimeAssertionError;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
-import org.aion.types.Address;
 import org.aion.vm.api.interfaces.IExecutionLog;
 import org.aion.vm.api.interfaces.InternalTransactionInterface;
 
@@ -14,71 +12,52 @@ import org.aion.vm.api.interfaces.InternalTransactionInterface;
  * These side-effects include the following data:
  *
  * 1. All of the logs generated during the execution of this transaction.
- * 2. All of the addressed that were marked to be deleted during the execution of this transaction.
- * 3. All of the internal transactions that were spawned as a result of executing this transaction.
+ * 2. All of the internal transactions that were spawned as a result of executing this transaction.
  */
-public class SideEffects {
-    private List<IExecutionLog> logs;
-    private List<InternalTransactionInterface> internalTransactions;
+public final class SideEffects {
+    private final List<IExecutionLog> logs;
+    private final List<InternalTransactionInterface> internalTransactions;
+
+    private SideEffects(List<InternalTransactionInterface> internalTransactions, List<IExecutionLog> logs) {
+        RuntimeAssertionError.assertTrue(internalTransactions != null);
+        RuntimeAssertionError.assertTrue(logs != null);
+
+        this.internalTransactions = Collections.unmodifiableList(internalTransactions);
+        this.logs = Collections.unmodifiableList(logs);
+    }
 
     /**
-     * Constructs a new empty {@code SideEffects}.
+     * Constructs a new side-effects object with no internal transactions or logs.
      */
-    public SideEffects() {
-        this.logs = new ArrayList<>();
-        this.internalTransactions = new ArrayList<>();
+    public static SideEffects emptySideEffects() {
+        return new SideEffects(Collections.emptyList(), Collections.emptyList());
     }
 
-    public SideEffects(List<InternalTransactionInterface> internalTransactions, List<IExecutionLog> logs) {
-        this.logs = new ArrayList<>();
-        this.internalTransactions = new ArrayList<>();
-
-        this.logs.addAll(logs);
-        this.internalTransactions.addAll(internalTransactions);
+    /**
+     * Constructs a new side-effects object with the specified internal transactions and logs.
+     *
+     * @param internalTransactions The internal transactions.
+     * @param logs The logs.
+     */
+    public static SideEffects newSideEffects(List<InternalTransactionInterface> internalTransactions, List<IExecutionLog> logs) {
+        return new SideEffects(internalTransactions, logs);
     }
 
-    public void merge(SideEffects sideEffects) {
-        throw RuntimeAssertionError.unimplemented("unimplemented.");
-    }
-
-    public void markAllInternalTransactionsAsRejected() {
-        throw RuntimeAssertionError.unimplemented("unimplemented.");
-    }
-
-    public void addInternalTransaction(InternalTransactionInterface transaction) {
-        throw RuntimeAssertionError.unimplemented("unimplemented.");
-    }
-
-    public void addInternalTransactions(List<InternalTransactionInterface> transactions) {
-        throw RuntimeAssertionError.unimplemented("unimplemented.");
-    }
-
-    public void addToDeletedAddresses(Address address) {
-        throw RuntimeAssertionError.unimplemented("unimplemented.");
-    }
-
-    public void addAllToDeletedAddresses(Collection<Address> addresses) {
-        throw RuntimeAssertionError.unimplemented("unimplemented.");
-    }
-
-    public void addLog(IExecutionLog log) {
-        throw RuntimeAssertionError.unimplemented("unimplemented.");
-    }
-
-    public void addLogs(Collection<IExecutionLog> logs) {
-        throw RuntimeAssertionError.unimplemented("unimplemented.");
-    }
-
+    /**
+     * Returns an unmodifiable list of internal transactions.
+     *
+     * @return the internal transactions.
+     */
     public List<InternalTransactionInterface> getInternalTransactions() {
         return this.internalTransactions;
     }
 
-    public List<Address> getAddressesToBeDeleted() {
-        return new ArrayList<>();
-    }
-
+    /**
+     * Returns an unmodifiable list of logs.
+     *
+     * @return the logs.
+     */
     public List<IExecutionLog> getExecutionLogs() {
         return this.logs;
     }
-
 }

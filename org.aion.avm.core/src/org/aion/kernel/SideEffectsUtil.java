@@ -23,7 +23,7 @@ public final class SideEffectsUtil {
         List<InternalTransactionInterface> internalTransactions = new ArrayList<>(sideEffects.getInternalTransactions());
         internalTransactions.add(internalTransaction);
 
-        return new SideEffects(internalTransactions, sideEffects.getExecutionLogs());
+        return SideEffects.newSideEffects(internalTransactions, sideEffects.getExecutionLogs());
     }
 
     /**
@@ -38,7 +38,7 @@ public final class SideEffectsUtil {
         List<IExecutionLog> logs = new ArrayList<>(sideEffects.getExecutionLogs());
         logs.add(log);
 
-        return new SideEffects(sideEffects.getInternalTransactions(), logs);
+        return SideEffects.newSideEffects(sideEffects.getInternalTransactions(), logs);
     }
 
     /**
@@ -57,7 +57,7 @@ public final class SideEffectsUtil {
         List<InternalTransactionInterface> transactions = new ArrayList<>(sideEffects.getInternalTransactions());
         transactions.addAll(internalTransactions);
 
-        return new SideEffects(transactions, allLogs);
+        return SideEffects.newSideEffects(transactions, allLogs);
     }
 
     /**
@@ -72,6 +72,6 @@ public final class SideEffectsUtil {
         for (InternalTransactionInterface internalTransaction : internalTransactions) {
             internalTransaction.markAsRejected();
         }
-        return new SideEffects(internalTransactions, Collections.emptyList());
+        return SideEffects.newSideEffects(internalTransactions, Collections.emptyList());
     }
 }

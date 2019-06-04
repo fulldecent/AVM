@@ -186,7 +186,7 @@ public class AvmTransactionResult {
         this.energyLimit = energyLimit;
         this.energyUsed = energyUsed;
         this.energyRemaining = this.energyLimit - this.energyUsed;
-        this.sideEffects = new SideEffects();
+        this.sideEffects = SideEffects.emptySideEffects();
     }
 
     public ResultCode getResultCode() {
