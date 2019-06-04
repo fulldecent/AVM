@@ -14,7 +14,6 @@ import org.aion.kernel.TestingBlock;
 import org.aion.kernel.TestingKernel;
 import org.aion.kernel.TestingTransaction;
 import org.aion.vm.api.interfaces.KernelInterface;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,18 +29,18 @@ public class AionBufferPerfTest {
         return JarBuilder.buildJarForMainAndClassesAndUserlib(AionBufferPerfContract.class);
     }
 
-    private TransactionResult deploy(KernelInterface kernel, AvmImpl avm, byte[] testJar){
+    private AvmTransactionResult deploy(KernelInterface kernel, AvmImpl avm, byte[] testJar){
         byte[] testWalletArguments = new byte[0];
         TestingTransaction createTransaction = TestingTransaction.create(from, kernel.getNonce(from), BigInteger.ZERO, new CodeAndArguments(testJar, testWalletArguments).encodeToBytes(), energyLimit, energyPrice);
-        TransactionResult createResult = avm.run(kernel, new TestingTransaction[] {createTransaction})[0].get();
+        AvmTransactionResult createResult = avm.run(kernel, new TestingTransaction[] {createTransaction})[0].get();
 
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, createResult.getResultCode());
         return createResult;
     }
 
-    private TransactionResult call(KernelInterface kernel, AvmImpl avm, org.aion.types.Address contract, org.aion.types.Address sender, byte[] args) {
+    private AvmTransactionResult call(KernelInterface kernel, AvmImpl avm, org.aion.types.Address contract, org.aion.types.Address sender, byte[] args) {
         TestingTransaction callTransaction = TestingTransaction.call(sender, contract, kernel.getNonce(sender), BigInteger.ZERO, args, energyLimit, 1L);
-        TransactionResult callResult = avm.run(kernel, new TestingTransaction[] {callTransaction})[0].get();
+        AvmTransactionResult callResult = avm.run(kernel, new TestingTransaction[] {callTransaction})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, callResult.getResultCode());
         return callResult;
     }
@@ -54,7 +53,7 @@ public class AionBufferPerfTest {
         KernelInterface kernel = new TestingKernel(block);
         AvmImpl avm = CommonAvmFactory.buildAvmInstanceForConfiguration(new StandardCapabilities(), new AvmConfiguration());
 
-        TransactionResult deployRes = deploy(kernel, avm, buildBufferPerfJar());
+        AvmTransactionResult deployRes = deploy(kernel, avm, buildBufferPerfJar());
         org.aion.types.Address contract = org.aion.types.Address.wrap(deployRes.getReturnData());
 
         args = ABIUtil.encodeMethodArguments("callPutByte");

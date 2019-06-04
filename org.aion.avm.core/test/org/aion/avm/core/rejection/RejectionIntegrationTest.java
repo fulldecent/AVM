@@ -19,7 +19,6 @@ import org.aion.kernel.TestingKernel;
 import org.aion.kernel.TestingTransaction;
 import org.aion.types.Address;
 import org.aion.vm.api.interfaces.KernelInterface;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -57,7 +56,7 @@ public class RejectionIntegrationTest {
         byte[] txData = new CodeAndArguments(jar, new byte[0]).encodeToBytes();
         
         TestingTransaction transaction = TestingTransaction.create(FROM, kernel.getNonce(FROM), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult createResult = avm.run(RejectionIntegrationTest.kernel, new TestingTransaction[] {transaction})[0].get();
+        AvmTransactionResult createResult = avm.run(RejectionIntegrationTest.kernel, new TestingTransaction[] {transaction})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.FAILED_REJECTED, createResult.getResultCode());
     }
 
@@ -68,7 +67,7 @@ public class RejectionIntegrationTest {
         byte[] txData = new CodeAndArguments(jar, new byte[0]).encodeToBytes();
 
         TestingTransaction transaction = TestingTransaction.create(FROM, kernel.getNonce(FROM), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult createResult = avm.run(RejectionIntegrationTest.kernel, new TestingTransaction[] {transaction})[0].get();
+        AvmTransactionResult createResult = avm.run(RejectionIntegrationTest.kernel, new TestingTransaction[] {transaction})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.FAILED_REJECTED, createResult.getResultCode());
     }
 
@@ -82,7 +81,7 @@ public class RejectionIntegrationTest {
         byte[] txData = new CodeAndArguments(jar, new byte[0]).encodeToBytes();
 
         TestingTransaction transaction = TestingTransaction.create(FROM, kernel.getNonce(FROM), BigInteger.ZERO, txData, ENERGY_LIMIT, ENERGY_PRICE);
-        TransactionResult createResult = avm.run(RejectionIntegrationTest.kernel, new TestingTransaction[] {transaction})[0].get();
+        AvmTransactionResult createResult = avm.run(RejectionIntegrationTest.kernel, new TestingTransaction[] {transaction})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.FAILED_REJECTED, createResult.getResultCode());
     }
 }

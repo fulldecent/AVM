@@ -7,7 +7,6 @@ import org.aion.avm.core.util.CodeAndArguments;
 import org.aion.avm.core.util.ABIUtil;
 import org.aion.avm.core.util.Helpers;
 import org.aion.kernel.*;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,14 +64,14 @@ public class EnergyUsageDebugModeTest {
 
         //deploy in debugMode Mode
         TestingTransaction create = TestingTransaction.create(deployer, kernel.getNonce(deployer), BigInteger.ZERO, txData, 10_000_000l, energyPrice);
-        TransactionResult createResult = avmDebugMode.run(this.kernel, new TestingTransaction[] {create})[0].get();
+        AvmTransactionResult createResult = avmDebugMode.run(this.kernel, new TestingTransaction[] {create})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, createResult.getResultCode());
         Address contractAddressDebug = new Address(createResult.getReturnData());
 
         long energyLimit = 1_000_000l;
         byte[] argData = ABIUtil.encodeMethodArguments(methodName, args);
         TestingTransaction call = TestingTransaction.call(deployer, org.aion.types.Address.wrap(contractAddressDebug.toByteArray()), kernel.getNonce(deployer), BigInteger.ZERO, argData, energyLimit, 1l);
-        TransactionResult result = avmDebugMode.run(this.kernel, new TestingTransaction[] {call})[0].get();
+        AvmTransactionResult result = avmDebugMode.run(this.kernel, new TestingTransaction[] {call})[0].get();
 
         long energyUsed = energyLimit - result.getEnergyRemaining();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result.getResultCode());
@@ -92,13 +91,13 @@ public class EnergyUsageDebugModeTest {
 
         //deploy in normal Mode
         TestingTransaction create = TestingTransaction.create(deployer, kernel.getNonce(deployer), BigInteger.ZERO, txData, 10_000_000l, energyPrice);
-        TransactionResult createResult = avmNormalMode.run(this.kernel, new TestingTransaction[] {create})[0].get();
+        AvmTransactionResult createResult = avmNormalMode.run(this.kernel, new TestingTransaction[] {create})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, createResult.getResultCode());
         Address contractAddressNormal = new Address(createResult.getReturnData());
 
         byte[] argData = ABIUtil.encodeMethodArguments(methodName, args);
         TestingTransaction call = TestingTransaction.call(deployer, org.aion.types.Address.wrap(contractAddressNormal.toByteArray()), kernel.getNonce(deployer), BigInteger.ZERO, argData, energyLimit, 1l);
-        TransactionResult result = avmNormalMode.run(this.kernel, new TestingTransaction[] {call})[0].get();
+        AvmTransactionResult result = avmNormalMode.run(this.kernel, new TestingTransaction[] {call})[0].get();
         long energyUsed = energyLimit - result.getEnergyRemaining();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result.getResultCode());
         Assert.assertEquals(111, new BigInteger(result.getReturnData()).intValue());

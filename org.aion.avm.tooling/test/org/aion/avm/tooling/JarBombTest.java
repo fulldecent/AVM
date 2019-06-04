@@ -10,8 +10,8 @@ import java.math.BigInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.aion.avm.core.util.CodeAndArguments;
+import org.aion.kernel.AvmTransactionResult;
 import org.aion.kernel.AvmTransactionResult.Code;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -36,7 +36,7 @@ public class JarBombTest {
     @Test
     public void testVeryLargeSingleClassJarBomb() throws IOException {
         byte[] jar = makeBomb(1, TOO_LARGE_CLASS_SIZE);
-        TransactionResult result = avmRule.deploy(deployer, BigInteger.ZERO, jar, 5_000_000, 1).getTransactionResult();
+        AvmTransactionResult result = avmRule.deploy(deployer, BigInteger.ZERO, jar, 5_000_000, 1).getTransactionResult();
         assertEquals(Code.FAILED_INVALID_DATA, result.getResultCode());
     }
 
@@ -49,7 +49,7 @@ public class JarBombTest {
     @Test
     public void testLargeMultiClassJarBomb() throws IOException {
         byte[] jar = makeBomb(10, LARGE_CLASS_SIZE);
-        TransactionResult result = avmRule.deploy(deployer, BigInteger.ZERO, jar, 5_000_000, 1).getTransactionResult();
+        AvmTransactionResult result = avmRule.deploy(deployer, BigInteger.ZERO, jar, 5_000_000, 1).getTransactionResult();
         assertEquals(Code.FAILED_INVALID_DATA, result.getResultCode());
     }
 

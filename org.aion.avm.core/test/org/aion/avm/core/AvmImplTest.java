@@ -23,7 +23,6 @@ import org.aion.kernel.TestingBlock;
 import org.aion.kernel.TestingKernel;
 import org.aion.kernel.TestingTransaction;
 import org.aion.vm.api.interfaces.KernelInterface;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.aion.vm.api.interfaces.TransactionInterface;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -273,7 +272,7 @@ public class AvmImplTest {
         long energyLimit = 1_000_000l;
         long energyPrice = 1l;
         TestingTransaction tx1 = TestingTransaction.create(deployer, kernel.getNonce(deployer), BigInteger.ZERO, txData, energyLimit, energyPrice);
-        TransactionResult result1 = avm.run(kernel, new TestingTransaction[] {tx1})[0].get();
+        AvmTransactionResult result1 = avm.run(kernel, new TestingTransaction[] {tx1})[0].get();
         assertEquals(AvmTransactionResult.Code.SUCCESS, result1.getResultCode());
 
         Address contractAddr = new Address(result1.getReturnData());
@@ -291,7 +290,7 @@ public class AvmImplTest {
         // call (1 -> 2 -> 2)
         long transaction2EnergyLimit = 1_000_000l;
         TestingTransaction tx2 = TestingTransaction.call(deployer, org.aion.types.Address.wrap(contractAddr.toByteArray()), kernel.getNonce(deployer), BigInteger.ZERO, contractAddr.toByteArray(), transaction2EnergyLimit, energyPrice);
-        TransactionResult result2 = avm.run(kernel, new TestingTransaction[] {tx2})[0].get();
+        AvmTransactionResult result2 = avm.run(kernel, new TestingTransaction[] {tx2})[0].get();
         assertEquals(AvmTransactionResult.Code.SUCCESS, result2.getResultCode());
         assertArrayEquals("CALL".getBytes(), result2.getReturnData());
         // Account for the cost:  (blocks in call method) + runtime.call
@@ -424,7 +423,7 @@ public class AvmImplTest {
         // Cause the failure.
         byte[] nearData = ABIUtil.encodeMethodArguments("localFailAfterReentrant");
         TestingTransaction tx = TestingTransaction.call(deployer, org.aion.types.Address.wrap(contractAddr.toByteArray()), kernel.getNonce(deployer), BigInteger.ZERO, nearData, energyLimit, 1L);
-        TransactionResult result2 = avm.run(kernel, new TestingTransaction[] {tx})[0].get();
+        AvmTransactionResult result2 = avm.run(kernel, new TestingTransaction[] {tx})[0].get();
         assertEquals(AvmTransactionResult.Code.FAILED_OUT_OF_ENERGY, result2.getResultCode());
         
         // We shouldn't see any changes, since this failed.
@@ -505,7 +504,7 @@ public class AvmImplTest {
         // Verify the internal call depth limit is in effect.
         byte[] callData = ABIUtil.encodeMethodArguments("recursiveChangeNested", 0, 10);
         TestingTransaction tx = TestingTransaction.call(deployer, org.aion.types.Address.wrap(contractAddr.toByteArray()), kernel.getNonce(deployer), BigInteger.ZERO, callData, 20_000_000l, 1L);
-        TransactionResult result2 = avm.run(kernel, new TestingTransaction[] {tx})[0].get();
+        AvmTransactionResult result2 = avm.run(kernel, new TestingTransaction[] {tx})[0].get();
         assertEquals(AvmTransactionResult.Code.FAILED_EXCEPTION, result2.getResultCode());
 
         avm.shutdown();
@@ -595,7 +594,7 @@ public class AvmImplTest {
         byte[] spawnerCallData = ABIUtil.encodeMethodArguments("spawnOnly", shouldFail);
         long energyLimit = 1_000_000l;
         TestingTransaction tx = TestingTransaction.call(TestingKernel.PREMINED_ADDRESS, org.aion.types.Address.wrap(spawnerAddress.toByteArray()), kernel.getNonce(deployer), BigInteger.ZERO, spawnerCallData, energyLimit, 1L);
-        TransactionResult result2 = avm.run(kernel, new TestingTransaction[] {tx})[0].get();
+        AvmTransactionResult result2 = avm.run(kernel, new TestingTransaction[] {tx})[0].get();
         assertEquals(AvmTransactionResult.Code.FAILED_INVALID, result2.getResultCode());
         avm.shutdown();
     }
@@ -699,7 +698,7 @@ public class AvmImplTest {
         TestingKernel kernel = new TestingKernel(block);
         AvmImpl avm = CommonAvmFactory.buildAvmInstanceForConfiguration(new EmptyCapabilities(), new AvmConfiguration());
         
-        TransactionResult createResult = createDAppCanFail(kernel, avm, spawnerCreateData);
+        AvmTransactionResult createResult = createDAppCanFail(kernel, avm, spawnerCreateData);
         assertEquals(AvmTransactionResult.Code.SUCCESS, createResult.getResultCode());
         Address spawnerAddress = new Address(createResult.getReturnData());
         assertNotNull(spawnerAddress);
@@ -715,7 +714,7 @@ public class AvmImplTest {
         TestingKernel kernel = new TestingKernel(block);
         AvmImpl avm = CommonAvmFactory.buildAvmInstanceForConfiguration(new EmptyCapabilities(), new AvmConfiguration());
         
-        TransactionResult createResult = createDAppCanFail(kernel, avm, spawnerCreateData);
+        AvmTransactionResult createResult = createDAppCanFail(kernel, avm, spawnerCreateData);
         // We are ultimately failing due to the AssertionError the class triggers if the create fails.
         assertEquals(AvmTransactionResult.Code.FAILED_EXCEPTION, createResult.getResultCode());
         avm.shutdown();
@@ -725,7 +724,7 @@ public class AvmImplTest {
     private int callRecursiveHash(KernelInterface kernel, AvmImpl avm, long energyLimit, Address contractAddr, int depth) {
         byte[] argData = ABIUtil.encodeMethodArguments("getRecursiveHashCode", depth);
         TestingTransaction call = TestingTransaction.call(deployer, org.aion.types.Address.wrap(contractAddr.toByteArray()), kernel.getNonce(deployer), BigInteger.ZERO, argData, energyLimit, 1L);
-        TransactionResult result = avm.run(kernel, new TestingTransaction[] {call})[0].get();
+        AvmTransactionResult result = avm.run(kernel, new TestingTransaction[] {call})[0].get();
         assertEquals(AvmTransactionResult.Code.SUCCESS, result.getResultCode());
         return ((Integer) ABIUtil.decodeOneObject(result.getReturnData())).intValue();
     }
@@ -742,12 +741,12 @@ public class AvmImplTest {
     }
 
     private Address createDApp(KernelInterface kernel, AvmImpl avm, byte[] createData) {
-        TransactionResult result1 = createDAppCanFail(kernel, avm, createData);
+        AvmTransactionResult result1 = createDAppCanFail(kernel, avm, createData);
         assertEquals(AvmTransactionResult.Code.SUCCESS, result1.getResultCode());
         return new Address(result1.getReturnData());
     }
 
-    private TransactionResult createDAppCanFail(KernelInterface kernel, AvmImpl avm, byte[] createData) {
+    private AvmTransactionResult createDAppCanFail(KernelInterface kernel, AvmImpl avm, byte[] createData) {
         long energyLimit = 10_000_000l;
         long energyPrice = 1l;
         TestingTransaction tx1 = TestingTransaction.create(deployer, kernel.getNonce(deployer), BigInteger.ZERO, createData, energyLimit, energyPrice);
@@ -757,7 +756,7 @@ public class AvmImplTest {
     private Object callDApp(KernelInterface kernel, AvmImpl avm, Address dAppAddress, byte[] argData) {
         long energyLimit = 5_000_000l;
         TestingTransaction tx = TestingTransaction.call(deployer, org.aion.types.Address.wrap(dAppAddress.toByteArray()), kernel.getNonce(deployer), BigInteger.ZERO, argData, energyLimit, 1L);
-        TransactionResult result2 = avm.run(kernel, new TestingTransaction[] {tx})[0].get();
+        AvmTransactionResult result2 = avm.run(kernel, new TestingTransaction[] {tx})[0].get();
         assertEquals(AvmTransactionResult.Code.SUCCESS, result2.getResultCode());
         return ABIUtil.decodeOneObject(result2.getReturnData());
     }
@@ -769,7 +768,7 @@ public class AvmImplTest {
         long energyLimit = 10_000_000l;
         long energyPrice = 1l;
         TestingTransaction tx1 = TestingTransaction.create(deployer, kernel.getNonce(deployer), BigInteger.ZERO, deployment, energyLimit, energyPrice);
-        TransactionResult result1 = avm.run(kernel, new TestingTransaction[] {tx1})[0].get();
+        AvmTransactionResult result1 = avm.run(kernel, new TestingTransaction[] {tx1})[0].get();
         avm.shutdown();
         assertEquals(AvmTransactionResult.Code.FAILED_INVALID_DATA, result1.getResultCode());
     }

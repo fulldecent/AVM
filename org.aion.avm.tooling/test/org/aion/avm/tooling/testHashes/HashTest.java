@@ -6,7 +6,6 @@ import org.aion.avm.tooling.AvmRule;
 import org.aion.avm.tooling.hash.HashUtils;
 import org.aion.avm.core.util.Helpers;
 import org.aion.kernel.AvmTransactionResult;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,14 +40,14 @@ public class HashTest {
 
         // Call blake2b
         byte[] txData = ABIUtil.encodeMethodArguments(blake2bMethodName, hashMessage);
-        TransactionResult txResult = avmRule.call(deployer, dappAddress, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
+        AvmTransactionResult txResult = avmRule.call(deployer, dappAddress, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
 
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, txResult.getResultCode());
         Assert.assertEquals(true, (ABIUtil.decodeOneObject(txResult.getReturnData())));
 
         // Retrieve hash
         byte[] txData2 = ABIUtil.encodeMethodArguments("getHashedVal");
-        TransactionResult txResult2 = avmRule.call(deployer, dappAddress, BigInteger.ZERO, txData2, energyLimit, energyPrice).getTransactionResult();
+        AvmTransactionResult txResult2 = avmRule.call(deployer, dappAddress, BigInteger.ZERO, txData2, energyLimit, energyPrice).getTransactionResult();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, txResult2.getResultCode());
 
         // check hash correctness
@@ -68,14 +67,14 @@ public class HashTest {
 
         // Call sha256
         byte[] txData = ABIUtil.encodeMethodArguments(shaMethodName, hashMessage);
-        TransactionResult txResult = avmRule.call(deployer, dappAddress, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
+        AvmTransactionResult txResult = avmRule.call(deployer, dappAddress, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
 
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, txResult.getResultCode());
         Assert.assertEquals(true, (ABIUtil.decodeOneObject(txResult.getReturnData())));
 
         // Retrieve hash
         byte[] txData2 = ABIUtil.encodeMethodArguments("getHashedVal");
-        TransactionResult txResult2 = avmRule.call(deployer, dappAddress, BigInteger.ZERO, txData2, energyLimit, energyPrice).getTransactionResult();
+        AvmTransactionResult txResult2 = avmRule.call(deployer, dappAddress, BigInteger.ZERO, txData2, energyLimit, energyPrice).getTransactionResult();
 
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, txResult2.getResultCode());
 
@@ -96,14 +95,14 @@ public class HashTest {
 
         // Call Keccak256
         byte[] txData = ABIUtil.encodeMethodArguments(keccakbMethodName, hashMessage);
-        TransactionResult txResult = avmRule.call(deployer, dappAddress, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
+        AvmTransactionResult txResult = avmRule.call(deployer, dappAddress, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
 
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, txResult.getResultCode());
         Assert.assertEquals(true, (ABIUtil.decodeOneObject(txResult.getReturnData())));
 
         // Retrieve hash
         byte[] txData2 = ABIUtil.encodeMethodArguments("getHashedVal");
-        TransactionResult txResult2 = avmRule.call(deployer, dappAddress, BigInteger.ZERO, txData2, energyLimit, energyPrice).getTransactionResult();
+        AvmTransactionResult txResult2 = avmRule.call(deployer, dappAddress, BigInteger.ZERO, txData2, energyLimit, energyPrice).getTransactionResult();
 
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, txResult2.getResultCode());
 

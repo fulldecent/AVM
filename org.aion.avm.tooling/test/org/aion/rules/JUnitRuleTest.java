@@ -5,8 +5,8 @@ import avm.Address;
 import org.aion.avm.core.util.LogSizeUtils;
 import org.aion.avm.tooling.AvmRule;
 import org.aion.avm.userlib.AionMap;
+import org.aion.kernel.AvmTransactionResult;
 import org.aion.vm.api.interfaces.ResultCode;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -84,7 +84,7 @@ public class JUnitRuleTest {
     public void balanceTransfer(){
         // balance transfer to account
         Address to = avmRule.getRandomAddress(BigInteger.ZERO);
-        TransactionResult result = avmRule.balanceTransfer(preminedAccount, to, BigInteger.valueOf(100L), 21000, 1L).getTransactionResult();
+        AvmTransactionResult result = avmRule.balanceTransfer(preminedAccount, to, BigInteger.valueOf(100L), 21000, 1L).getTransactionResult();
 
         assertTrue(result.getResultCode().isSuccess());
         assertEquals(BigInteger.valueOf(100L), avmRule.kernel.getBalance(org.aion.types.Address.wrap(to.toByteArray())));

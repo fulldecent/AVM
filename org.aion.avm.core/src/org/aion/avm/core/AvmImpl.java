@@ -25,7 +25,6 @@ import org.aion.types.Address;
 import org.aion.vm.api.interfaces.KernelInterface;
 import org.aion.vm.api.interfaces.SimpleFuture;
 import org.aion.vm.api.interfaces.TransactionInterface;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,7 +136,6 @@ public class AvmImpl implements AvmInternal {
 
     }
 
-    @Override
     public void start() {
         RuntimeAssertionError.assertTrue(null == AvmImpl.currentAvm);
         AvmImpl.currentAvm = this;
@@ -158,8 +156,7 @@ public class AvmImpl implements AvmInternal {
         this.handoff.startExecutorThreads();
     }
 
-    @Override
-    public SimpleFuture<TransactionResult>[] run(KernelInterface kernel, TransactionInterface[] transactions) throws IllegalStateException {
+    public SimpleFuture<AvmTransactionResult>[] run(KernelInterface kernel, TransactionInterface[] transactions) throws IllegalStateException {
         if (null != this.backgroundFatalError) {
             throw this.backgroundFatalError;
         }
@@ -248,7 +245,6 @@ public class AvmImpl implements AvmInternal {
         return result;
     }
 
-    @Override
     public void shutdown() {
         // Note that we can fail due to either a RuntimeException or an Error, so catch either and be explicit about re-throwing.
         Error errorDuringShutdown = null;

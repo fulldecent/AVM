@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 import org.aion.vm.api.interfaces.SimpleFuture;
-import org.aion.vm.api.interfaces.TransactionResult;
 
 
 /**
@@ -42,7 +41,7 @@ public class HandoffMonitor {
      * @param tasks The tasks for each transaction to run.
      * @return The result of the transactions in the given tasks as a corresponding array of asynchronous futures.
      */
-    public synchronized SimpleFuture<TransactionResult>[] sendTransactionsAsynchronously(TransactionTask[] tasks) {
+    public synchronized SimpleFuture<AvmTransactionResult>[] sendTransactionsAsynchronously(TransactionTask[] tasks) {
         // We lock-step these, so there can't already be a transaction in the hand-off.
         RuntimeAssertionError.assertTrue(this.taskQueue.isEmpty());
         RuntimeAssertionError.assertTrue(null == this.outgoingResults);
@@ -210,7 +209,7 @@ public class HandoffMonitor {
     }
 
 
-    private class ResultWaitFuture implements SimpleFuture<TransactionResult> {
+    private class ResultWaitFuture implements SimpleFuture<AvmTransactionResult> {
         private final int index;
         // We will cache the result.
         private AvmTransactionResult cachedResult;

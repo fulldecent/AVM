@@ -11,7 +11,6 @@ import org.aion.avm.core.util.CodeAndArguments;
 import org.aion.avm.core.util.Helpers;
 import org.aion.kernel.*;
 import org.aion.vm.api.interfaces.KernelInterface;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -71,49 +70,49 @@ public class PocExchangeTest {
 
         private org.aion.types.Address initCoin(byte[] jar, byte[] arguments){
             TestingTransaction createTransaction = TestingTransaction.create(minter, kernel.getNonce(minter), BigInteger.ZERO, new CodeAndArguments(jar, arguments).encodeToBytes(), energyLimit, 1L);
-            TransactionResult createResult = avm.run(PocExchangeTest.this.kernel, new TestingTransaction[] {createTransaction})[0].get();
+            AvmTransactionResult createResult = avm.run(PocExchangeTest.this.kernel, new TestingTransaction[] {createTransaction})[0].get();
             Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, createResult.getResultCode());
             return org.aion.types.Address.wrap(createResult.getReturnData());
         }
 
-        public TransactionResult callTotalSupply() {
+        public AvmTransactionResult callTotalSupply() {
             byte[] args = ABIUtil.encodeMethodArguments("totalSupply");
             return call(minter, args);
         }
 
-        private TransactionResult callBalanceOf(org.aion.types.Address toQuery) {
+        private AvmTransactionResult callBalanceOf(org.aion.types.Address toQuery) {
             byte[] args = ABIUtil.encodeMethodArguments("balanceOf", new Address(toQuery.toBytes()));
             return call(minter, args);
         }
 
-        private TransactionResult callMint(org.aion.types.Address receiver, long amount) {
+        private AvmTransactionResult callMint(org.aion.types.Address receiver, long amount) {
             byte[] args = ABIUtil.encodeMethodArguments("mint", new Address(receiver.toBytes()), amount);
             return call(minter, args);
         }
 
-        private TransactionResult callTransfer(org.aion.types.Address sender, org.aion.types.Address receiver, long amount) {
+        private AvmTransactionResult callTransfer(org.aion.types.Address sender, org.aion.types.Address receiver, long amount) {
             byte[] args = ABIUtil.encodeMethodArguments("transfer", new Address(receiver.toBytes()), amount);
             return call(sender, args);
         }
 
-        private TransactionResult callAllowance(org.aion.types.Address owner, org.aion.types.Address spender) {
+        private AvmTransactionResult callAllowance(org.aion.types.Address owner, org.aion.types.Address spender) {
             byte[] args = ABIUtil.encodeMethodArguments("allowance", new Address(owner.toBytes()), new Address(spender.toBytes()));
             return call(minter, args);
         }
 
-        private TransactionResult callApprove(org.aion.types.Address owner, org.aion.types.Address spender, long amount) {
+        private AvmTransactionResult callApprove(org.aion.types.Address owner, org.aion.types.Address spender, long amount) {
             byte[] args = ABIUtil.encodeMethodArguments("approve", new Address(spender.toBytes()), amount);
             return call(owner, args);
         }
 
-        private TransactionResult callTransferFrom(org.aion.types.Address executor, org.aion.types.Address from, org.aion.types.Address to, long amount) {
+        private AvmTransactionResult callTransferFrom(org.aion.types.Address executor, org.aion.types.Address from, org.aion.types.Address to, long amount) {
             byte[] args = ABIUtil.encodeMethodArguments("transferFrom", new Address(from.toBytes()), new Address(to.toBytes()), amount);
             return call(executor, args);
         }
 
-        private TransactionResult call(org.aion.types.Address sender, byte[] args) {
+        private AvmTransactionResult call(org.aion.types.Address sender, byte[] args) {
             TestingTransaction callTransaction = TestingTransaction.call(sender, addr, kernel.getNonce(sender), BigInteger.ZERO, args, energyLimit, 1l);
-            TransactionResult callResult = avm.run(PocExchangeTest.this.kernel, new TestingTransaction[] {callTransaction})[0].get();
+            AvmTransactionResult callResult = avm.run(PocExchangeTest.this.kernel, new TestingTransaction[] {callTransaction})[0].get();
             Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, callResult.getResultCode());
             return callResult;
         }
@@ -131,29 +130,29 @@ public class PocExchangeTest {
 
         private org.aion.types.Address initExchange(byte[] jar, byte[] arguments){
             TestingTransaction createTransaction = TestingTransaction.create(owner, kernel.getNonce(owner), BigInteger.ZERO, new CodeAndArguments(jar, arguments).encodeToBytes(), energyLimit, 1L);
-            TransactionResult createResult = avm.run(PocExchangeTest.this.kernel, new TestingTransaction[] {createTransaction})[0].get();
+            AvmTransactionResult createResult = avm.run(PocExchangeTest.this.kernel, new TestingTransaction[] {createTransaction})[0].get();
             Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, createResult.getResultCode());
             return org.aion.types.Address.wrap(createResult.getReturnData());
         }
 
-        public TransactionResult callListCoin(String name, org.aion.types.Address coinAddr) {
+        public AvmTransactionResult callListCoin(String name, org.aion.types.Address coinAddr) {
             byte[] args = ABIUtil.encodeMethodArguments("listCoin", name.toCharArray(), new Address(coinAddr.toBytes()));
             return call(owner,args);
         }
 
-        public TransactionResult callRequestTransfer(String name, org.aion.types.Address from,  org.aion.types.Address to, long amount) {
+        public AvmTransactionResult callRequestTransfer(String name, org.aion.types.Address from,  org.aion.types.Address to, long amount) {
             byte[] args = ABIUtil.encodeMethodArguments("requestTransfer", name.toCharArray(), new Address(to.toBytes()), amount);
             return call(from,args);
         }
 
-        public TransactionResult callProcessExchangeTransaction(org.aion.types.Address sender) {
+        public AvmTransactionResult callProcessExchangeTransaction(org.aion.types.Address sender) {
             byte[] args = ABIUtil.encodeMethodArguments("processExchangeTransaction");
             return call(sender,args);
         }
 
-        private TransactionResult call(org.aion.types.Address sender, byte[] args) {
+        private AvmTransactionResult call(org.aion.types.Address sender, byte[] args) {
             TestingTransaction callTransaction = TestingTransaction.call(sender, addr, kernel.getNonce(sender), BigInteger.ZERO, args, energyLimit, 1l);
-            TransactionResult callResult = avm.run(PocExchangeTest.this.kernel, new TestingTransaction[] {callTransaction})[0].get();
+            AvmTransactionResult callResult = avm.run(PocExchangeTest.this.kernel, new TestingTransaction[] {callTransaction})[0].get();
             Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, callResult.getResultCode());
             return callResult;
         }
@@ -161,7 +160,7 @@ public class PocExchangeTest {
 
     @Test
     public void testERC20() {
-        TransactionResult res;
+        AvmTransactionResult res;
         //System.out.println(">> Deploy \"PEPE\" token contract...");
         byte[] arguments = ABIUtil.encodeDeploymentArguments("Pepe", "PEPE", 8);
         CoinContract pepe = new CoinContract(null, pepeMinter, testERC20Jar, arguments);
@@ -250,7 +249,7 @@ public class PocExchangeTest {
         //System.out.println(">> Deploy the Exchange contract...");
         ExchangeContract ex = new ExchangeContract(null, exchangeOwner, testExchangeJar);
 
-        TransactionResult res;
+        AvmTransactionResult res;
 
         res = ex.callListCoin("PEPE", pepe.addr);
         Assert.assertEquals(true, ABIUtil.decodeOneObject(res.getReturnData()));

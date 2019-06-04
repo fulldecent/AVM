@@ -11,7 +11,6 @@ import org.aion.avm.core.util.ABIUtil;
 import org.aion.avm.core.util.Helpers;
 import org.aion.kernel.*;
 import org.aion.vm.api.interfaces.SimpleFuture;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -36,8 +35,8 @@ public class AvmParallelTest {
         TestingTransaction t4 = TestingTransaction.call(preminedAddress, usr1, BigInteger.valueOf(4), BigInteger.valueOf(500_000), new byte[0], 100000L, 1);
 
         TestingTransaction[] batch = new TestingTransaction[]{t0, t1, t2, t3, t4};
-        SimpleFuture<TransactionResult>[] results = avm.run(kernel, batch);
-        for (SimpleFuture<TransactionResult> f : results){
+        SimpleFuture<AvmTransactionResult>[] results = avm.run(kernel, batch);
+        for (SimpleFuture<AvmTransactionResult> f : results){
             f.get();
         }
 
@@ -56,7 +55,7 @@ public class AvmParallelTest {
 
         batch = new TestingTransaction[]{t0, t1, t2, t3, t4};
         results = avm.run(kernel, batch);
-        for (SimpleFuture<TransactionResult> f : results){
+        for (SimpleFuture<AvmTransactionResult> f : results){
             f.get();
         }
 
@@ -77,7 +76,7 @@ public class AvmParallelTest {
         }
 
         results = avm.run(kernel, batch);
-        for (SimpleFuture<TransactionResult> f : results){
+        for (SimpleFuture<AvmTransactionResult> f : results){
             f.get();
         }
 
@@ -108,8 +107,8 @@ public class AvmParallelTest {
         TestingTransaction t4 = TestingTransaction.call(usr4, usr1, BigInteger.ZERO, BigInteger.valueOf(1_000_000), new byte[0], 100000L, 1);
 
         TestingTransaction[] batch = new TestingTransaction[]{t0, t1, t2, t3, t4};
-        SimpleFuture<TransactionResult>[] results = avm.run(kernel, batch);
-        for (SimpleFuture<TransactionResult> f : results){
+        SimpleFuture<AvmTransactionResult>[] results = avm.run(kernel, batch);
+        for (SimpleFuture<AvmTransactionResult> f : results){
             f.get();
         }
 
@@ -137,12 +136,12 @@ public class AvmParallelTest {
         TestingTransaction t4 = TestingTransaction.create(usr4, BigInteger.ZERO, BigInteger.ZERO, new CodeAndArguments(code, null).encodeToBytes(), 10_000_000L, 1);
 
         TestingTransaction[] batch = new TestingTransaction[]{t0, t1, t2, t3, t4};
-        SimpleFuture<TransactionResult>[] results = avm.run(kernel, batch);
-        for (SimpleFuture<TransactionResult> f : results){
+        SimpleFuture<AvmTransactionResult>[] results = avm.run(kernel, batch);
+        for (SimpleFuture<AvmTransactionResult> f : results){
             f.get();
         }
 
-        TransactionResult res = results[4].get();
+        AvmTransactionResult res = results[4].get();
         org.aion.types.Address contractAddr = org.aion.types.Address.wrap(res.getReturnData());
 
         byte[] args = ABIUtil.encodeMethodArguments("doTransfer");
@@ -156,7 +155,7 @@ public class AvmParallelTest {
 
         batch = new TestingTransaction[]{t0, t1, t2, t3, t4};
         results = avm.run(kernel, batch);
-        for (SimpleFuture<TransactionResult> f : results){
+        for (SimpleFuture<AvmTransactionResult> f : results){
             f.get();
         }
 
@@ -183,8 +182,8 @@ public class AvmParallelTest {
             tempUsers[i] = org.aion.types.Address.wrap(Helpers.randomBytes(org.aion.types.Address.SIZE));
             firstBatch[i] = TestingTransaction.call(preminedAddress, tempUsers[i], BigInteger.valueOf(i), BigInteger.valueOf(2L * valueToSend), new byte[0], 100_000L, 1L);
         }
-        SimpleFuture<TransactionResult>[] results = avm.run(kernel, firstBatch);
-        for (SimpleFuture<TransactionResult> f : results){
+        SimpleFuture<AvmTransactionResult>[] results = avm.run(kernel, firstBatch);
+        for (SimpleFuture<AvmTransactionResult> f : results){
             Assert.assertTrue(f.get().getResultCode().isSuccess());
         }
         
@@ -194,7 +193,7 @@ public class AvmParallelTest {
             secondBatch[i] = TestingTransaction.call(tempUsers[i], targetUser, BigInteger.ZERO, BigInteger.valueOf(valueToSend), new byte[0], 100_000L, 1L);
         }
         results = avm.run(kernel, secondBatch);
-        for (SimpleFuture<TransactionResult> f : results){
+        for (SimpleFuture<AvmTransactionResult> f : results){
             Assert.assertTrue(f.get().getResultCode().isSuccess());
         }
         

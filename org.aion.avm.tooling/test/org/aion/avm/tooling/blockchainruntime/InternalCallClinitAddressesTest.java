@@ -4,8 +4,8 @@ import org.aion.avm.core.util.ABIUtil;
 import avm.Address;
 import org.aion.avm.tooling.AvmRule;
 import org.aion.avm.tooling.AddressUtil;
+import org.aion.kernel.AvmTransactionResult;
 import org.aion.kernel.TestingTransaction;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -131,7 +131,7 @@ public class InternalCallClinitAddressesTest {
     }
 
     private static Address deployInternalCallClinitAddressTrackerContract() {
-        TransactionResult result = avmRule.deploy(from, BigInteger.ZERO, getDappBytes(), energyLimit, energyPrice).getTransactionResult();
+        AvmTransactionResult result = avmRule.deploy(from, BigInteger.ZERO, getDappBytes(), energyLimit, energyPrice).getTransactionResult();
         assertTrue(result.getResultCode().isSuccess());
         return new Address(result.getReturnData());
     }
@@ -146,7 +146,7 @@ public class InternalCallClinitAddressesTest {
             callData = ABIUtil.encodeMethodArguments("runInternalCallsAndTrackAddressGrabOwnAddressThenRecurse", dappBytes, numInternalCalls);
         }
 
-        TransactionResult result = avmRule.call(from, contract, BigInteger.ZERO, callData, energyLimit, energyPrice).getTransactionResult();
+        AvmTransactionResult result = avmRule.call(from, contract, BigInteger.ZERO, callData, energyLimit, energyPrice).getTransactionResult();
         assertTrue(result.getResultCode().isSuccess());
         return (Address[]) ABIUtil.decodeOneObject(result.getReturnData());
     }

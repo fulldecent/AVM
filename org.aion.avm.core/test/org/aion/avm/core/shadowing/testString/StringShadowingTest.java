@@ -12,7 +12,6 @@ import org.aion.avm.core.util.ABIUtil;
 import org.aion.avm.core.util.Helpers;
 import org.aion.kernel.*;
 import org.aion.vm.api.interfaces.SimpleFuture;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -36,7 +35,7 @@ public class StringShadowingTest {
         // call transactions and validate the results
         txData = ABIUtil.encodeMethodArguments("singleStringReturnInt");
         tx = TestingTransaction.call(from, dappAddr, kernel.getNonce(from), BigInteger.ZERO, txData, energyLimit, energyPrice);
-        TransactionResult result = avm.run(kernel, new TestingTransaction[] {tx})[0].get();
+        AvmTransactionResult result = avm.run(kernel, new TestingTransaction[] {tx})[0].get();
         Assert.assertTrue(java.util.Arrays.equals(new int[]{96354, 3, 1, -1}, (int[]) ABIUtil.decodeOneObject(result.getReturnData())));
 
         txData = ABIUtil.encodeMethodArguments("singleStringReturnBoolean");
@@ -119,7 +118,7 @@ public class StringShadowingTest {
         batch[5] = TestingTransaction.call(from, dappAddr, kernel.getNonce(from).add(BigInteger.valueOf(5)), BigInteger.ZERO, txData, energyLimit, energyPrice);
 
         // Send the batch.
-        SimpleFuture<TransactionResult>[] results = avm.run(kernel, batch);
+        SimpleFuture<AvmTransactionResult>[] results = avm.run(kernel, batch);
         
         // Now, process the results.
         Assert.assertTrue(java.util.Arrays.equals(new int[]{96354, 3, 1, -1}, (int[]) ABIUtil.decodeOneObject(results[0].get().getReturnData())));

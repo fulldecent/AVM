@@ -5,7 +5,7 @@ import avm.Address;
 import org.aion.avm.userlib.AionList;
 import org.aion.avm.userlib.AionMap;
 import org.aion.avm.userlib.AionSet;
-import org.aion.vm.api.interfaces.TransactionResult;
+import org.aion.kernel.AvmTransactionResult;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,7 +41,7 @@ public class BasicAppTest {
     @Test
     public void testIdentity() {
         byte[] txData = ABIUtil.encodeMethodArguments("identity", new byte[] {42, 13});
-        TransactionResult result = avmRule.call(from, dappAddr, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
+        AvmTransactionResult result = avmRule.call(from, dappAddr, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
 
         // These should be the same instance.
         Assert.assertEquals(42, ((byte[]) ABIUtil.decodeOneObject(result.getReturnData()))[0]);
@@ -51,7 +51,7 @@ public class BasicAppTest {
     @Test
     public void testSumInput() {
         byte[] txData = ABIUtil.encodeMethodArguments("sum", new byte[] {42, 13});
-        TransactionResult result = avmRule.call(from, dappAddr, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
+        AvmTransactionResult result = avmRule.call(from, dappAddr, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
 
         // Should be just 1 byte, containing the sum.
         Assert.assertEquals(42 + 13, ABIUtil.decodeOneObject(result.getReturnData()));
@@ -65,7 +65,7 @@ public class BasicAppTest {
     @Test
     public void testRepeatedSwaps() {
         byte[] txData = ABIUtil.encodeMethodArguments("swapInputs", 1);
-        TransactionResult result = avmRule.call(from, dappAddr, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
+        AvmTransactionResult result = avmRule.call(from, dappAddr, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
 
         Assert.assertEquals(0, ABIUtil.decodeOneObject(result.getReturnData()));
 
@@ -83,7 +83,7 @@ public class BasicAppTest {
     @Test
     public void testArrayEquality() {
         byte[] txData = ABIUtil.encodeMethodArguments("arrayEquality", new byte[] {42, 13});
-        TransactionResult result = avmRule.call(from, dappAddr, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
+        AvmTransactionResult result = avmRule.call(from, dappAddr, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
 
         Assert.assertEquals(false, ABIUtil.decodeOneObject(result.getReturnData()));
 
@@ -96,7 +96,7 @@ public class BasicAppTest {
     @Test
     public void testAllocateArray() {
         byte[] txData = ABIUtil.encodeMethodArguments("allocateObjectArray");
-        TransactionResult result = avmRule.call(from, dappAddr, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
+        AvmTransactionResult result = avmRule.call(from, dappAddr, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
 
         Assert.assertEquals(2, ABIUtil.decodeOneObject(result.getReturnData()));
     }
@@ -104,7 +104,7 @@ public class BasicAppTest {
     @Test
     public void testByteAutoboxing() {
         byte[] txData = ABIUtil.encodeMethodArguments("byteAutoboxing", (byte) 42);
-        TransactionResult result = avmRule.call(from, dappAddr, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
+        AvmTransactionResult result = avmRule.call(from, dappAddr, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
 
         Assert.assertEquals(42, ((byte[]) ABIUtil.decodeOneObject(result.getReturnData()))[0]);
         Assert.assertEquals(42, ((byte[]) ABIUtil.decodeOneObject(result.getReturnData()))[1]);
@@ -113,7 +113,7 @@ public class BasicAppTest {
     @Test
     public void testMapInteraction() {
         byte[] txData = ABIUtil.encodeMethodArguments("mapPut", (byte)1, (byte)42);
-        TransactionResult result = avmRule.call(from, dappAddr, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
+        AvmTransactionResult result = avmRule.call(from, dappAddr, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
 
         Assert.assertEquals((byte) 42, ABIUtil.decodeOneObject(result.getReturnData()));
 
