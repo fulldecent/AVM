@@ -6,7 +6,6 @@ import org.aion.avm.userlib.AionList;
 import org.aion.avm.userlib.AionMap;
 import org.aion.avm.userlib.AionSet;
 import org.aion.kernel.AvmTransactionResult;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,7 +38,7 @@ public class SyntheticMethodsTest {
 
     @Test
     public void testDappWorking() {
-        TransactionResult result = createAndRunTransaction("getCompareResult");
+        AvmTransactionResult result = createAndRunTransaction("getCompareResult");
 
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result.getResultCode());
         Assert.assertEquals(SyntheticMethodsTestTarget.DEFAULT_VALUE, ABIUtil.decodeOneObject(result.getReturnData()));
@@ -48,44 +47,44 @@ public class SyntheticMethodsTest {
     @Test
     public void testCompareTo() {
         // BigInteger
-        TransactionResult result1 = createAndRunTransaction("compareSomething", 1);
+        AvmTransactionResult result1 = createAndRunTransaction("compareSomething", 1);
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result1.getResultCode());
-        TransactionResult result1Value = createAndRunTransaction("getCompareResult");
+        AvmTransactionResult result1Value = createAndRunTransaction("getCompareResult");
         Assert.assertEquals(1, ABIUtil.decodeOneObject(result1Value.getReturnData()));
 
-        TransactionResult result2 = createAndRunTransaction("compareSomething", 2);
+        AvmTransactionResult result2 = createAndRunTransaction("compareSomething", 2);
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result2.getResultCode());
-        TransactionResult result2Value = createAndRunTransaction("getCompareResult");
+        AvmTransactionResult result2Value = createAndRunTransaction("getCompareResult");
         Assert.assertEquals(0, ABIUtil.decodeOneObject(result2Value.getReturnData()));
 
-        TransactionResult result3 = createAndRunTransaction("compareSomething", 3);
+        AvmTransactionResult result3 = createAndRunTransaction("compareSomething", 3);
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result3.getResultCode());
-        TransactionResult result3Value = createAndRunTransaction("getCompareResult");
+        AvmTransactionResult result3Value = createAndRunTransaction("getCompareResult");
         Assert.assertEquals(-1, ABIUtil.decodeOneObject(result3Value.getReturnData()));
 
-        TransactionResult result4 = createAndRunTransaction("compareSomething", 4);
+        AvmTransactionResult result4 = createAndRunTransaction("compareSomething", 4);
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result4.getResultCode());
-        TransactionResult result4Value = createAndRunTransaction("getCompareResult");
+        AvmTransactionResult result4Value = createAndRunTransaction("getCompareResult");
         Assert.assertEquals(100, ABIUtil.decodeOneObject(result4Value.getReturnData()));
     }
 
     @Test
     public void testTarget(){
         // pick target1Impl
-        TransactionResult result1 = createAndRunTransaction("pickTarget", 1);
+        AvmTransactionResult result1 = createAndRunTransaction("pickTarget", 1);
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result1.getResultCode());
 
         // check for correctness in synthetic, should get impl1 name
-        TransactionResult result2 = createAndRunTransaction("getName");
+        AvmTransactionResult result2 = createAndRunTransaction("getName");
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result2.getResultCode());
         Assert.assertEquals("TargetClassImplOne", ABIUtil.decodeOneObject(result2.getReturnData()));
 
         // pick target2Impl
-        TransactionResult result3 = createAndRunTransaction("pickTarget", 2);
+        AvmTransactionResult result3 = createAndRunTransaction("pickTarget", 2);
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result3.getResultCode());
 
         // check for correctness in synthetic, should get abstract name
-        TransactionResult result4 = createAndRunTransaction("getName");
+        AvmTransactionResult result4 = createAndRunTransaction("getName");
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result4.getResultCode());
         Assert.assertEquals("TargetAbstractClass", ABIUtil.decodeOneObject(result4.getReturnData()));
     }
@@ -96,25 +95,25 @@ public class SyntheticMethodsTest {
         int inputOverrideGeneric = 20;
 
         // calling setup generics
-        TransactionResult result1 = createAndRunTransaction("setGenerics",
+        AvmTransactionResult result1 = createAndRunTransaction("setGenerics",
                 inputGeneric, inputOverrideGeneric);
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result1.getResultCode());
 
         // retrieve each object
-        TransactionResult result2 = createAndRunTransaction("getIntGen");
+        AvmTransactionResult result2 = createAndRunTransaction("getIntGen");
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result2.getResultCode());
         Assert.assertEquals(inputGeneric, ABIUtil.decodeOneObject(result2.getReturnData()));
 
-        TransactionResult result3 = createAndRunTransaction("getIntGenSub");
+        AvmTransactionResult result3 = createAndRunTransaction("getIntGenSub");
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result3.getResultCode());
         Assert.assertEquals(inputOverrideGeneric, ABIUtil.decodeOneObject(result3.getReturnData()));
 
-        TransactionResult result4 = createAndRunTransaction("getSubCopy");
+        AvmTransactionResult result4 = createAndRunTransaction("getSubCopy");
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result4.getResultCode());
         Assert.assertEquals(inputOverrideGeneric, ABIUtil.decodeOneObject(result4.getReturnData()));
     }
 
-    private TransactionResult createAndRunTransaction(String methodName, Object ... args){
+    private AvmTransactionResult createAndRunTransaction(String methodName, Object ... args){
         byte[] txData = ABIUtil.encodeMethodArguments(methodName, args);
         return avmRule.call(from, dappAddr, BigInteger.ZERO, txData, energyLimit, energyPrice).getTransactionResult();
     }

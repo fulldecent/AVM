@@ -15,11 +15,11 @@ import org.aion.avm.core.dappreading.JarBuilder;
 import org.aion.avm.core.util.CodeAndArguments;
 import org.aion.avm.core.util.ABIUtil;
 import org.aion.avm.core.util.Helpers;
+import org.aion.kernel.AvmTransactionResult;
 import org.aion.kernel.TestingBlock;
 import org.aion.kernel.TestingKernel;
 import org.aion.kernel.TestingTransaction;
 import org.aion.vm.api.interfaces.KernelInterface;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -105,7 +105,7 @@ public class ContractBalanceTest {
         jar = new CodeAndArguments(jar, new byte[0]).encodeToBytes();
 
         TestingTransaction transaction = TestingTransaction.create(from, kernel.getNonce(from), value, jar, energyLimit, energyPrice);
-        TransactionResult result = avm.run(ContractBalanceTest.kernel, new TestingTransaction[] {transaction})[0].get();
+        AvmTransactionResult result = avm.run(ContractBalanceTest.kernel, new TestingTransaction[] {transaction})[0].get();
         assertTrue(result.getResultCode().isSuccess());
         return new AionAddress(result.getReturnData());
     }
@@ -113,7 +113,7 @@ public class ContractBalanceTest {
     private BigInteger callContractToGetItsBalance(AionAddress contract) {
         byte[] callData = ABIUtil.encodeMethodArguments("getBalanceOfThisContract");
         TestingTransaction transaction = TestingTransaction.call(from, contract, kernel.getNonce(from), BigInteger.ZERO, callData, energyLimit, energyPrice);
-        TransactionResult result = avm.run(ContractBalanceTest.kernel, new TestingTransaction[] {transaction})[0].get();
+        AvmTransactionResult result = avm.run(ContractBalanceTest.kernel, new TestingTransaction[] {transaction})[0].get();
         assertTrue(result.getResultCode().isSuccess());
         return new BigInteger((byte[]) ABIUtil.decodeOneObject(result.getReturnData()));
     }
@@ -121,7 +121,7 @@ public class ContractBalanceTest {
     private BigInteger callContractToGetClinitBalance(AionAddress contract) {
         byte[] callData = ABIUtil.encodeMethodArguments("getBalanceOfThisContractDuringClinit");
         TestingTransaction transaction = TestingTransaction.call(from, contract, kernel.getNonce(from), BigInteger.ZERO, callData, energyLimit, energyPrice);
-        TransactionResult result = avm.run(ContractBalanceTest.kernel, new TestingTransaction[] {transaction})[0].get();
+        AvmTransactionResult result = avm.run(ContractBalanceTest.kernel, new TestingTransaction[] {transaction})[0].get();
         assertTrue(result.getResultCode().isSuccess());
         return new BigInteger((byte[]) ABIUtil.decodeOneObject(result.getReturnData()));
     }
@@ -131,7 +131,7 @@ public class ContractBalanceTest {
         jar = new CodeAndArguments(jar, new byte[0]).encodeToBytes();
 
         TestingTransaction transaction = TestingTransaction.create(from, kernel.getNonce(from), BigInteger.ZERO, jar, energyLimit, energyPrice);
-        TransactionResult result = avm.run(ContractBalanceTest.kernel, new TestingTransaction[] {transaction})[0].get();
+        AvmTransactionResult result = avm.run(ContractBalanceTest.kernel, new TestingTransaction[] {transaction})[0].get();
         assertTrue(result.getResultCode().isSuccess());
         return new AionAddress(result.getReturnData());
     }
@@ -145,7 +145,7 @@ public class ContractBalanceTest {
 
     private BigInteger runTransactionAndInterpretOutputAsBigInteger(AionAddress contract, byte[] callData) {
         TestingTransaction transaction = TestingTransaction.call(from, contract, kernel.getNonce(from), BigInteger.ZERO, callData, energyLimit, energyPrice);
-        TransactionResult result = avm.run(ContractBalanceTest.kernel, new TestingTransaction[] {transaction})[0].get();
+        AvmTransactionResult result = avm.run(ContractBalanceTest.kernel, new TestingTransaction[] {transaction})[0].get();
         assertTrue(result.getResultCode().isSuccess());
         return new BigInteger((byte[]) ABIUtil.decodeOneObject(result.getReturnData()));
     }

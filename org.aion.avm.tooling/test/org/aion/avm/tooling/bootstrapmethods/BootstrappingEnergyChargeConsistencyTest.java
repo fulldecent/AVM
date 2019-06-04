@@ -5,7 +5,6 @@ import avm.Address;
 import org.aion.avm.tooling.AvmRule;
 import org.aion.kernel.AvmTransactionResult;
 import org.aion.kernel.AvmTransactionResult.Code;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -65,7 +64,7 @@ public class BootstrappingEnergyChargeConsistencyTest {
         return avmRule.deploy(deployer, BigInteger.ZERO, avmRule.getDappBytes(EnergyChargeConsistencyTarget.class, null)).getDappAddress();
     }
 
-    private TransactionResult runContract(Address sender, Address contract) {
+    private AvmTransactionResult runContract(Address sender, Address contract) {
         byte[] callData = ABIUtil.encodeMethodArguments("run");
         return avmRule.call(sender, contract, BigInteger.ZERO, callData, energyLimit, 1L).getTransactionResult();
     }

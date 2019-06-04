@@ -12,7 +12,6 @@ import org.aion.avm.core.util.Helpers;
 import org.aion.avm.userlib.abi.ABIEncoder;
 import org.aion.kernel.*;
 import org.aion.vm.api.interfaces.SimpleFuture;
-import org.aion.vm.api.interfaces.TransactionResult;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -66,7 +65,7 @@ public class PerformanceTest {
 
             //deploying dapp
             TestingTransaction create = TestingTransaction.create(userAddress, kernel.getNonce(userAddress), BigInteger.ZERO, txData, energyLimit, energyPrice);
-            AvmTransactionResult createResult = (AvmTransactionResult) avm.run(this.kernel, new TestingTransaction[]{create})[0].get();
+            AvmTransactionResult createResult = avm.run(this.kernel, new TestingTransaction[]{create})[0].get();
             Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, createResult.getResultCode());
             AionAddress contractAddr = new AionAddress(createResult.getReturnData());
             contractAddrs[i] = contractAddr;
@@ -116,9 +115,8 @@ public class PerformanceTest {
 
     private void callSingle(AionAddress sender, TestingBlock block, AionAddress contractAddr, String methodName) {
         byte[] argData = ABIUtil.encodeMethodArguments(methodName);
-        TestingTransaction call = TestingTransaction.call(sender, contractAddr, kernel.getNonce(
-            sender), BigInteger.ZERO, argData, energyLimit, energyPrice);
-        AvmTransactionResult result = (AvmTransactionResult) avm.run(this.kernel, new TestingTransaction[] {call})[0].get();
+        TestingTransaction call = TestingTransaction.call(sender, contractAddr, kernel.getNonce(sender), BigInteger.ZERO, argData, energyLimit, energyPrice);
+        AvmTransactionResult result = avm.run(this.kernel, new TestingTransaction[] {call})[0].get();
         Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result.getResultCode());
     }
 
@@ -164,9 +162,9 @@ public class PerformanceTest {
                 AionAddress contractAddr = Nto1 ? contractAddrs[0] : contractAddrs[i];
                 transactionArray[i] = TestingTransaction.call(sender, contractAddr, kernel.getNonce(sender), BigInteger.ZERO, argData, energyLimit, energyPrice);
             }
-            SimpleFuture<TransactionResult>[] futures = avm.run(this.kernel, transactionArray);
-            for (SimpleFuture<TransactionResult> future : futures) {
-                AvmTransactionResult result = (AvmTransactionResult) future.get();
+            SimpleFuture<AvmTransactionResult>[] futures = avm.run(this.kernel, transactionArray);
+            for (SimpleFuture<AvmTransactionResult> future : futures) {
+                AvmTransactionResult result = future.get();
                 Assert.assertEquals(AvmTransactionResult.Code.SUCCESS, result.getResultCode());
                 ABIUtil.decodeOneObject(result.getReturnData());
             }
