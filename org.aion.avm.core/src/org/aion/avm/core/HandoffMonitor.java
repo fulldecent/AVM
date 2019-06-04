@@ -90,7 +90,8 @@ public class HandoffMonitor {
         AvmTransactionResult result = this.outgoingResults[index];
 
         SideEffects sideEffects = incomingTransactionTasks[index].executionSideEffects.getExternalTransactionSideEffects();
-        result.setSideEffects(sideEffects);
+        result.setLogs(sideEffects.getExecutionLogs());
+        result.setInternalTransactions(sideEffects.getInternalTransactions());
 
         this.incomingTransactionTasks[index] = null;
         this.outgoingResults[index] = null;

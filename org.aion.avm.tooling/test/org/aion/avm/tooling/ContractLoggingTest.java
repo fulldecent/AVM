@@ -19,7 +19,6 @@ import org.aion.avm.core.util.CodeAndArguments;
 import org.aion.avm.core.util.Helpers;
 import org.aion.avm.core.util.LogSizeUtils;
 import org.aion.kernel.AvmTransactionResult;
-import org.aion.kernel.SideEffects;
 import org.aion.kernel.TestingBlock;
 import org.aion.kernel.TestingKernel;
 import org.aion.kernel.TestingTransaction;
@@ -60,11 +59,10 @@ public class ContractLoggingTest {
         AvmTransactionResult result = runTransaction(transaction);
         assertTrue(result.getResultCode().isSuccess());
 
-        SideEffects sideEffects = result.getSideEffects();
-        assertEquals(NUM_LOGS, sideEffects.getExecutionLogs().size());
-        assertEquals(0, sideEffects.getInternalTransactions().size());
+        assertEquals(NUM_LOGS, result.getLogs().size());
+        assertEquals(0, result.getInternalTransactions().size());
 
-        verifyLogs(sideEffects.getExecutionLogs(), 1);
+        verifyLogs(result.getLogs(), 1);
     }
 
     @Test
@@ -73,11 +71,10 @@ public class ContractLoggingTest {
         AvmTransactionResult result = runTransaction(transaction);
         assertTrue(result.getResultCode().isSuccess());
 
-        SideEffects sideEffects = result.getSideEffects();
-        assertEquals(NUM_LOGS, sideEffects.getExecutionLogs().size());
-        assertEquals(9, sideEffects.getInternalTransactions().size());
+        assertEquals(NUM_LOGS, result.getLogs().size());
+        assertEquals(9, result.getInternalTransactions().size());
 
-        verifyLogs(sideEffects.getExecutionLogs(), 1);
+        verifyLogs(result.getLogs(), 1);
     }
 
     @Test
@@ -88,11 +85,10 @@ public class ContractLoggingTest {
         AvmTransactionResult result = runTransaction(transaction);
         assertTrue(result.getResultCode().isSuccess());
 
-        SideEffects sideEffects = result.getSideEffects();
-        assertEquals(NUM_LOGS * (depth + 1), sideEffects.getExecutionLogs().size());
-        assertEquals(depth, sideEffects.getInternalTransactions().size());
+        assertEquals(NUM_LOGS * (depth + 1), result.getLogs().size());
+        assertEquals(depth, result.getInternalTransactions().size());
 
-        verifyLogs(sideEffects.getExecutionLogs(), depth + 1);
+        verifyLogs(result.getLogs(), depth + 1);
     }
 
     @Test
@@ -101,11 +97,10 @@ public class ContractLoggingTest {
         AvmTransactionResult result = runTransaction(transaction);
         assertTrue(result.getResultCode().isSuccess());
 
-        SideEffects sideEffects = result.getSideEffects();
-        assertEquals(NUM_LOGS * 5, sideEffects.getExecutionLogs().size());
-        assertEquals(5, sideEffects.getInternalTransactions().size());
+        assertEquals(NUM_LOGS * 5, result.getLogs().size());
+        assertEquals(5, result.getInternalTransactions().size());
 
-        verifyLogs(sideEffects.getExecutionLogs(), 5);
+        verifyLogs(result.getLogs(), 5);
     }
 
     /**
