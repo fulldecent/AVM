@@ -20,30 +20,30 @@ public class AvmTransaction {
      * @return The new AvmTransaction instance.
      * @throws IllegalArgumentException If any elements of external are statically invalid.
      */
-    public static AvmTransaction from(IExternalCapabilities capabilities, TransactionInterface external) throws IllegalArgumentException {
-        boolean isCreate = external.isContractCreationTransaction();
-
-        AionAddress senderAddress = external.getSenderAddress();
-        AionAddress destinationAddress = isCreate
-                ? capabilities.generateContractAddress(external)
-                : external.getDestinationAddress();
-        byte[] transactionHash = external.getTransactionHash();
-        BigInteger value = new BigInteger(1, external.getValue());
-        BigInteger nonce = new BigInteger(1, external.getNonce());
-        long energyPrice = external.getEnergyPrice();
-        long energyLimit = external.getEnergyLimit();
-        byte[] data = external.getData();
-        return new AvmTransaction(senderAddress
-                , destinationAddress
-                , transactionHash
-                , value
-                , nonce
-                , energyPrice
-                , energyLimit
-                , isCreate
-                , data
-            );
-    }
+//    public static AvmTransaction from(IExternalCapabilities capabilities, TransactionInterface external) throws IllegalArgumentException {
+//        boolean isCreate = external.isContractCreationTransaction();
+//
+//        AionAddress senderAddress = external.getSenderAddress();
+//        AionAddress destinationAddress = isCreate
+//                ? capabilities.generateContractAddress(external)
+//                : external.getDestinationAddress();
+//        byte[] transactionHash = external.getTransactionHash();
+//        BigInteger value = new BigInteger(1, external.getValue());
+//        BigInteger nonce = new BigInteger(1, external.getNonce());
+//        long energyPrice = external.getEnergyPrice();
+//        long energyLimit = external.getEnergyLimit();
+//        byte[] data = external.getData();
+//        return new AvmTransaction(senderAddress
+//                , destinationAddress
+//                , transactionHash
+//                , value
+//                , nonce
+//                , energyPrice
+//                , energyLimit
+//                , isCreate
+//                , data
+//            );
+//    }
 
 
     public final AionAddress senderAddress;

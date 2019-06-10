@@ -2,6 +2,8 @@ package org.aion.avm.core;
 
 import java.util.Arrays;
 import org.aion.aion_types.AionAddress;
+import org.aion.aion_types.Transaction;
+import org.aion.vm.api.interfaces.TransactionInterface;
 import s.java.math.BigInteger;
 import p.avm.Address;
 import p.avm.Result;
@@ -26,7 +28,7 @@ public class BlockchainRuntimeImpl implements IBlockchainRuntime {
     private final AvmInternal avm;
     private final ReentrantDAppStack.ReentrantState reentrantState;
 
-    private AvmTransaction tx;
+    private Transaction tx;
     private final byte[] dAppData;
     private TransactionTask task;
     private final IRuntimeSetup thisDAppSetup;
@@ -40,7 +42,7 @@ public class BlockchainRuntimeImpl implements IBlockchainRuntime {
     private BigInteger blockDifficultyCache;
 
 
-    public BlockchainRuntimeImpl(IExternalCapabilities capabilities, KernelInterface kernel, AvmInternal avm, ReentrantDAppStack.ReentrantState reentrantState, TransactionTask task, AvmTransaction tx, byte[] dAppData, IRuntimeSetup thisDAppSetup) {
+    public BlockchainRuntimeImpl(IExternalCapabilities capabilities, KernelInterface kernel, AvmInternal avm, ReentrantDAppStack.ReentrantState reentrantState, TransactionTask task, Transaction tx, byte[] dAppData, IRuntimeSetup thisDAppSetup) {
         this.capabilities = capabilities;
         this.kernel = kernel;
         this.avm = avm;
@@ -454,17 +456,17 @@ public class BlockchainRuntimeImpl implements IBlockchainRuntime {
         // Temporarily detach from the DApp we were in.
         InstrumentationHelpers.temporarilyExitFrame(this.thisDAppSetup);
 
-        // Create the AvmTransaction.
-        AvmTransaction avmTransaction = AvmTransaction.from(this.capabilities, internalTx);
+        // Create the Transaction.
+        Transaction transaction = createTransactionIfWellFormed(internalTx);
 
         // Acquire the target of the internal transaction
-        AionAddress target = avmTransaction.destinationAddress;
+        AionAddress target = transaction.destinationAddress;
         avm.getResourceMonitor().acquire(target.toByteArray(), task);
 
         // execute the internal transaction
         AvmTransactionResult newResult = null;
         try {
-            newResult = this.avm.runInternalTransaction(this.kernel, this.task, avmTransaction);
+            newResult = this.avm.runInternalTransaction(this.kernel, this.task, transaction);
         } finally {
             // Re-attach.
             InstrumentationHelpers.returnToExecutingFrame(this.thisDAppSetup);
@@ -482,5 +484,42 @@ public class BlockchainRuntimeImpl implements IBlockchainRuntime {
 
         return new Result(newResult.getResultCode().isSuccess(),
                 newResult.getReturnData() == null ? null : new ByteArray(Arrays.copyOf(newResult.getReturnData(), newResult.getReturnData().length)));
+    }
+
+    //TODO: Temporary until we figure out the relationship between InternalTransaction and Transaction
+
+
+    private Transaction createTransactionIfWellFormed(TransactionInterface inputTransaction) {
+
+        boolean isCreate = inputTransaction.isContractCreationTransaction();
+
+        AionAddress senderAddress = inputTransaction.getSenderAddress();
+
+        AionAddress destinationAddress = isCreate
+            ? capabilities.generateContractAddress(inputTransaction)
+            : inputTransaction.getDestinationAddress();
+
+        byte[] transactionHash = inputTransaction.getTransactionHash();
+
+        java.math.BigInteger value = new java.math.BigInteger(1, inputTransaction.getValue());
+
+        java.math.BigInteger nonce = new java.math.BigInteger(1, inputTransaction.getNonce());
+
+        long energyPrice = inputTransaction.getEnergyPrice();
+
+        long energyLimit = inputTransaction.getEnergyLimit();
+
+        byte[] data = inputTransaction.getData();
+
+        return new Transaction(senderAddress
+            , destinationAddress
+            , transactionHash
+            , value
+            , nonce
+            , energyPrice
+            , energyLimit
+            , isCreate
+            , data
+        );
     }
 }

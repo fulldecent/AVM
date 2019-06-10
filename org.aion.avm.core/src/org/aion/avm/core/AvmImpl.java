@@ -1,6 +1,7 @@
 package org.aion.avm.core;
 
 import org.aion.aion_types.AionAddress;
+import org.aion.aion_types.Transaction;
 import org.aion.avm.core.util.Helpers;
 import org.aion.kernel.*;
 
@@ -173,7 +174,7 @@ public class AvmImpl implements AvmInternal {
         }
         
         // Filter these transactions into the safe kind we use internally (the type passed in may not be well-formed).
-        AvmTransaction[] safeTransactions = checkTransactions(transactions);
+        Transaction[] safeTransactions = checkTransactions(transactions);
         // Create tasks for these new transactions and send them off to be asynchronously executed.
         TransactionTask[] tasks = new TransactionTask[transactions.length];
         for (int i = 0; i < transactions.length; i++){
@@ -183,12 +184,46 @@ public class AvmImpl implements AvmInternal {
         return this.handoff.sendTransactionsAsynchronously(tasks);
     }
 
-    private AvmTransaction[] checkTransactions(TransactionInterface[] transactions) {
-        AvmTransaction[] result = new AvmTransaction[transactions.length];
+    private Transaction[] checkTransactions(TransactionInterface[] transactions) {
+        Transaction[] result = new Transaction[transactions.length];
         for (int i = 0; i < result.length; ++i) {
-            result[i] = AvmTransaction.from(this.capabilities, transactions[i]);
+            result[i] = createTransactionIfWellFormed(transactions[i]);
         }
         return result;
+    }
+
+    private Transaction createTransactionIfWellFormed(TransactionInterface inputTransaction) {
+
+        boolean isCreate = inputTransaction.isContractCreationTransaction();
+
+        AionAddress senderAddress = inputTransaction.getSenderAddress();
+
+        AionAddress destinationAddress = isCreate
+            ? capabilities.generateContractAddress(inputTransaction)
+            : inputTransaction.getDestinationAddress();
+
+        byte[] transactionHash = inputTransaction.getTransactionHash();
+
+        BigInteger value = new BigInteger(1, inputTransaction.getValue());
+
+        BigInteger nonce = new BigInteger(1, inputTransaction.getNonce());
+
+        long energyPrice = inputTransaction.getEnergyPrice();
+
+        long energyLimit = inputTransaction.getEnergyLimit();
+
+        byte[] data = inputTransaction.getData();
+
+        return new Transaction(senderAddress
+            , destinationAddress
+            , transactionHash
+            , value
+            , nonce
+            , energyPrice
+            , energyLimit
+            , isCreate
+            , data
+        );
     }
 
     private AvmTransactionResult backgroundProcessTransaction(TransactionTask task) {
@@ -196,7 +231,7 @@ public class AvmImpl implements AvmInternal {
         AvmTransactionResult.Code error = null;
 
         RuntimeAssertionError.assertTrue(task != null);
-        AvmTransaction tx = task.getTransaction();
+        Transaction tx = task.getTransaction();
         RuntimeAssertionError.assertTrue(tx != null);
 
         // value/energyPrice/energyLimit sanity check
@@ -281,7 +316,7 @@ public class AvmImpl implements AvmInternal {
     }
 
     @Override
-    public AvmTransactionResult runInternalTransaction(KernelInterface parentKernel, TransactionTask task, AvmTransaction tx) {
+    public AvmTransactionResult runInternalTransaction(KernelInterface parentKernel, TransactionTask task, Transaction tx) {
         if (null != this.backgroundFatalError) {
             throw this.backgroundFatalError;
         }
@@ -297,7 +332,7 @@ public class AvmImpl implements AvmInternal {
         return result;
     }
 
-    private AvmTransactionResult runExternalInvoke(KernelInterface parentKernel, TransactionTask task, AvmTransaction tx) {
+    private AvmTransactionResult runExternalInvoke(KernelInterface parentKernel, TransactionTask task, Transaction tx) {
         // to capture any error during validation
         AvmTransactionResult.Code error = null;
 
@@ -326,7 +361,7 @@ public class AvmImpl implements AvmInternal {
         parentKernel.adjustBalance(sender, BigInteger.valueOf(tx.energyLimit).multiply(BigInteger.valueOf(energyPrice).negate()));
 
         // Run the common logic with the parent kernel as the top-level one.
-        AvmTransactionResult result = commonInvoke(parentKernel, task, tx, BillingRules.getBasicTransactionCost(tx.data));
+        AvmTransactionResult result = commonInvoke(parentKernel, task, tx, BillingRules.getBasicTransactionCost(tx.getTransactionData()));
 
         // Refund energy for transaction
         BigInteger refund = BigInteger.valueOf(result.getEnergyRemaining()).multiply(BigInteger.valueOf(energyPrice));
@@ -343,13 +378,13 @@ public class AvmImpl implements AvmInternal {
         return result;
     }
 
-    private AvmTransactionResult commonInvoke(KernelInterface parentKernel, TransactionTask task, AvmTransaction tx, long transactionBaseCost) {
+    private AvmTransactionResult commonInvoke(KernelInterface parentKernel, TransactionTask task, Transaction tx, long transactionBaseCost) {
         if (logger.isDebugEnabled()) {
             logger.debug("Transaction: address = {}, caller = {}, value = {}, data = {}, energyLimit = {}",
                 tx.destinationAddress,
                 tx.senderAddress,
                 Helpers.bytesToHexString(tx.value.toByteArray()),
-                Helpers.bytesToHexString(tx.data),
+                Helpers.bytesToHexString(tx.getTransactionData()),
                 tx.energyLimit);
         }
         // Invoke calls must build their transaction on top of an existing "parent" kernel.
@@ -383,7 +418,6 @@ public class AvmImpl implements AvmInternal {
             if ((null != stateToResume) && (null != thisTransactionKernel.getTransformedCode(recipient))) {
                 dapp = stateToResume.dApp;
                 // Call directly and don't interact with DApp cache (we are reentering the state, not the origin of it).
-                DAppExecutor.call(this.capabilities, thisTransactionKernel, this, dapp, stateToResume, task, tx, result, this.enableVerboseContractErrors);
             } else {
                 // If we didn't find it there (that is only for reentrant calls so it is rarely found in the stack), try the hot DApp cache.
                 ByteArrayWrapper addressWrapper = new ByteArrayWrapper(recipient.toByteArray());
