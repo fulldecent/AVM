@@ -1,7 +1,7 @@
 package avm;
 
 /**
- * Represents an address of account in the Aion Network.
+ * Represents an address of account in the Aion Network. All Aion addresses start with the prefix "a0".
  */
 public class Address {
 
